@@ -12,6 +12,7 @@ interface Gig {
   djName: string
   venueName: string | null
   guestCap: number | null
+  maxPerSignup: number
   isClosed: boolean
   totalGuests: number
 }
@@ -262,12 +263,12 @@ export default function GigSignUp() {
               name="quantity"
               required
               min="1"
-              max={remainingSpots ?? undefined}
+              max={remainingSpots !== null ? Math.min(gig.maxPerSignup, remainingSpots) : gig.maxPerSignup}
               defaultValue="1"
               className="input-field rounded-lg"
             />
             <p className="text-sm text-gray-500 mt-1">
-              Include yourself and any +1s
+              Include yourself and any +1s (max {gig.maxPerSignup})
             </p>
           </div>
 

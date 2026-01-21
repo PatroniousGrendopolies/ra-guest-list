@@ -12,12 +12,140 @@ interface Gig {
   djName: string
   venueName: string | null
   guestCap: number | null
+  maxPerSignup: number
   isClosed: boolean
   totalGuests: number
   signUpCount: number
 }
 
 type ViewMode = 'list' | 'calendar'
+
+interface EditModalProps {
+  gig: Gig
+  onClose: () => void
+  onSave: () => void
+}
+
+function EditModal({ gig, onClose, onSave }: EditModalProps) {
+  const [djName, setDjName] = useState(gig.djName)
+  const [guestCap, setGuestCap] = useState<string>(gig.guestCap?.toString() || '')
+  const [maxPerSignup, setMaxPerSignup] = useState<string>(gig.maxPerSignup?.toString() || '10')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+    setSaving(true)
+
+    try {
+      const response = await fetch(`/api/gigs/${gig.slug}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          djName: djName.trim(),
+          guestCap: guestCap ? parseInt(guestCap, 10) : null,
+          maxPerSignup: maxPerSignup ? parseInt(maxPerSignup, 10) : 10,
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to update')
+      }
+
+      onSave()
+      onClose()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div
+        className="bg-white rounded-3xl p-6 w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-xl font-bold mb-4">Edit Guest List</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              DJ / Artist Name
+            </label>
+            <input
+              type="text"
+              value={djName}
+              onChange={(e) => setDjName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Guest Cap {gig.totalGuests > 0 && <span className="text-gray-500 font-normal">(min: {gig.totalGuests})</span>}
+            </label>
+            <input
+              type="number"
+              value={guestCap}
+              onChange={(e) => setGuestCap(e.target.value)}
+              min={gig.totalGuests || 1}
+              placeholder="No limit"
+              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+            />
+            {gig.totalGuests > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                Currently {gig.totalGuests} guest{gig.totalGuests !== 1 ? 's' : ''} on the list
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Max Guests Per Signup
+            </label>
+            <input
+              type="number"
+              value={maxPerSignup}
+              onChange={(e) => setMaxPerSignup(e.target.value)}
+              min={1}
+              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Maximum +1s allowed per signup
+            </p>
+          </div>
+
+          {error && (
+            <p className="text-red-600 text-sm">{error}</p>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50"
+              disabled={saving}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              disabled={saving || !djName.trim()}
+            >
+              {saving ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 export default function Dashboard() {
   const router = useRouter()
@@ -27,6 +155,7 @@ export default function Dashboard() {
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [showPastEvents, setShowPastEvents] = useState(false)
+  const [editingGig, setEditingGig] = useState<Gig | null>(null)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
@@ -256,6 +385,15 @@ export default function Dashboard() {
                       {gig.isClosed ? 'Reopen List' : 'Close List'}
                     </button>
                     <button
+                      onClick={() => setEditingGig(gig)}
+                      className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Edit"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                      </svg>
+                    </button>
+                    <button
                       onClick={() => deleteGig(gig.slug)}
                       className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
                       title="Delete"
@@ -276,17 +414,30 @@ export default function Dashboard() {
                 {/* Progress bar */}
                 {gig.guestCap ? (
                   <div>
-                    <div className="flex items-center h-5 bg-gray-200 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gray-500 rounded-full flex items-center justify-end pr-2 min-w-[2.5rem]"
-                        style={{ width: `${Math.max((gig.totalGuests / gig.guestCap) * 100, 10)}%` }}
-                      >
-                        <span className="text-white text-xs font-medium">{gig.totalGuests}</span>
-                      </div>
-                      <div className="flex-1 flex items-center justify-end pr-2">
-                        <span className="text-gray-500 text-xs">{gig.guestCap}</span>
-                      </div>
-                    </div>
+                    {(() => {
+                      const percentage = (gig.totalGuests / gig.guestCap) * 100
+                      const isEmpty = gig.totalGuests === 0
+                      const isFull = gig.totalGuests >= gig.guestCap
+                      const showCapNumber = percentage < 85
+                      return (
+                        <div className="flex items-center h-5 bg-gray-200 rounded-full overflow-hidden">
+                          {!isEmpty && (
+                            <div
+                              className={`h-full bg-gray-500 flex items-center justify-end pr-2 min-w-[2.5rem] ${isFull ? 'rounded-full' : 'rounded-full'}`}
+                              style={{ width: isFull ? '100%' : `${Math.max(percentage, 10)}%` }}
+                            >
+                              <span className="text-white text-xs font-medium">{gig.totalGuests}</span>
+                            </div>
+                          )}
+                          {!isFull && (
+                            <div className={`flex-1 flex items-center pr-2 ${isEmpty ? 'justify-between pl-2' : 'justify-end'}`}>
+                              {isEmpty && <span className="text-gray-500 text-xs">0</span>}
+                              <span className={`text-gray-500 text-xs ${!showCapNumber && !isEmpty ? 'hidden' : ''}`}>{gig.guestCap}</span>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })()}
                     <div className="flex justify-between mt-1 text-xs text-gray-500">
                       <span>Confirmed</span>
                       <span>Spots available</span>
@@ -336,51 +487,92 @@ export default function Dashboard() {
                 date.getFullYear() === new Date().getFullYear() &&
                 date.getMonth() === new Date().getMonth() &&
                 date.getDate() === new Date().getDate()
+              const hasGig = dayGigs.length > 0
 
               return (
                 <div
                   key={index}
-                  className={`min-h-[100px] border border-gray-100 p-1 ${
-                    date ? 'bg-white' : 'bg-gray-50'
+                  className={`min-h-[120px] border border-gray-100 rounded-xl ${
+                    date ? (hasGig ? 'p-0' : 'p-2 bg-white') : 'bg-gray-50'
                   }`}
                 >
                   {date && (
                     <>
-                      <div className={`text-sm mb-1 ${
-                        isToday
-                          ? 'bg-gray-700 text-white w-6 h-6 rounded-full flex items-center justify-center'
-                          : 'text-gray-500'
-                      }`}>
-                        {date.getDate()}
-                      </div>
-                      <div className="space-y-1">
-                        {dayGigs.map((gig) => (
+                      {hasGig ? (
+                        // Cell with gig - card fills the whole cell
+                        dayGigs.map((gig) => (
                           <div
                             key={gig.id}
-                            className={`p-2 rounded-xl text-xs cursor-pointer border-2 hover:border-gray-400 transition-all duration-150 ${
+                            className={`h-full p-2 rounded-xl text-xs cursor-pointer border-2 hover:border-gray-400 transition-all duration-150 flex flex-col ${
                               gig.isClosed
                                 ? 'bg-red-50 border-red-200'
                                 : 'bg-blue-50 border-blue-200'
                             }`}
                             onClick={() => router.push(`/dashboard/${gig.slug}`)}
                           >
-                            <div className="font-medium truncate">{gig.djName}</div>
-                            <div className="text-gray-500 mt-0.5">
-                              {gig.totalGuests}{gig.guestCap ? `/${gig.guestCap}` : ''} guests
+                            {/* Date number inside card */}
+                            <div className="text-sm mb-1 text-gray-500">
+                              {date.getDate()}
                             </div>
+                            {/* Title - can wrap */}
+                            <div className="font-medium text-xs leading-tight">{gig.djName}</div>
+                            {/* Spacer to push progress bar and buttons to bottom */}
+                            <div className="flex-1" />
+                            {/* Progress bar */}
+                            {gig.guestCap ? (
+                              <div className="mb-1">
+                                {(() => {
+                                  const pct = (gig.totalGuests / gig.guestCap) * 100
+                                  const isFull = gig.totalGuests >= gig.guestCap
+                                  const isEmpty = gig.totalGuests === 0
+                                  return (
+                                    <div className="flex items-center h-3 bg-gray-200 rounded-full overflow-hidden">
+                                      {!isEmpty && (
+                                        <div
+                                          className="h-full bg-gray-500 rounded-full flex items-center justify-end pr-1"
+                                          style={{ width: isFull ? '100%' : `${Math.max(pct, 15)}%`, minWidth: '1rem' }}
+                                        >
+                                          <span className="text-white text-[8px] font-medium">{gig.totalGuests}</span>
+                                        </div>
+                                      )}
+                                      {!isFull && (
+                                        <div className={`flex-1 flex items-center pr-1 ${isEmpty ? 'justify-between pl-1' : 'justify-end'}`}>
+                                          {isEmpty && <span className="text-gray-500 text-[8px]">0</span>}
+                                          {pct < 75 && <span className="text-gray-500 text-[8px]">{gig.guestCap}</span>}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })()}
+                              </div>
+                            ) : (
+                              <div className="text-gray-500 mb-1 text-[10px]">
+                                {gig.totalGuests} guests
+                              </div>
+                            )}
+                            {/* Buttons */}
                             <div
-                              className="flex gap-1 mt-2"
+                              className="flex gap-1"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <button
                                 onClick={() => copyLink(gig.slug)}
-                                className={`flex-1 px-1.5 py-1 rounded-full text-[10px] transition-all ${
+                                className={`px-1.5 py-1 rounded-full text-[10px] transition-all flex items-center justify-center ${
                                   copiedSlug === gig.slug
                                     ? 'bg-[#5c7a6a] text-white'
                                     : 'bg-white border border-gray-300 hover:bg-gray-50'
                                 }`}
+                                title="Copy Link"
                               >
-                                {copiedSlug === gig.slug ? 'Copied!' : 'Link'}
+                                {copiedSlug === gig.slug ? (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                ) : (
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                  </svg>
+                                )}
                               </button>
                               <button
                                 onClick={() => downloadCsv(gig.slug)}
@@ -388,10 +580,28 @@ export default function Dashboard() {
                               >
                                 CSV
                               </button>
+                              <button
+                                onClick={() => setEditingGig(gig)}
+                                className="px-1.5 py-1 bg-white border border-gray-300 rounded-full text-[10px] hover:bg-gray-50"
+                                title="Edit"
+                              >
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                                </svg>
+                              </button>
                             </div>
                           </div>
-                        ))}
-                      </div>
+                        ))
+                      ) : (
+                        // Empty cell - just show date
+                        <div className={`text-sm ${
+                          isToday
+                            ? 'bg-gray-700 text-white w-6 h-6 rounded-full flex items-center justify-center'
+                            : 'text-gray-500'
+                        }`}>
+                          {date.getDate()}
+                        </div>
+                      )}
                     </>
                   )}
                 </div>
@@ -411,6 +621,15 @@ export default function Dashboard() {
             {showPastEvents ? `View Upcoming Events (${upcomingGigs.length})` : `View Past Events (${pastGigs.length})`}
           </button>
         </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingGig && (
+        <EditModal
+          gig={editingGig}
+          onClose={() => setEditingGig(null)}
+          onSave={fetchGigs}
+        />
       )}
     </main>
   )

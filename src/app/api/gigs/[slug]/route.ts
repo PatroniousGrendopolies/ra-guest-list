@@ -48,10 +48,33 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
     }
 
+    // If guestCap is being updated, validate it's not below current guest count
+    if (body.guestCap !== undefined && body.guestCap !== null) {
+      const existingGig = await prisma.gig.findUnique({
+        where: { slug },
+        include: { guests: true },
+      })
+
+      if (!existingGig) {
+        return NextResponse.json({ error: 'Gig not found' }, { status: 404 })
+      }
+
+      const totalGuests = existingGig.guests.reduce((sum, g) => sum + g.quantity, 0)
+
+      if (body.guestCap < totalGuests) {
+        return NextResponse.json(
+          { error: `Cannot set guest cap below current guest count (${totalGuests})` },
+          { status: 400 }
+        )
+      }
+    }
+
     const gig = await prisma.gig.update({
       where: { slug },
       data: {
+        ...(body.djName !== undefined && { djName: body.djName }),
         ...(body.guestCap !== undefined && { guestCap: body.guestCap }),
+        ...(body.maxPerSignup !== undefined && { maxPerSignup: body.maxPerSignup }),
         ...(body.isClosed !== undefined && { isClosed: body.isClosed }),
       },
     })

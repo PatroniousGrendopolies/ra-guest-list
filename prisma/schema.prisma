@@ -12,16 +12,17 @@ datasource db {
 }
 
 model Gig {
-  id        String   @id @default(cuid())
-  slug      String   @unique
-  date      DateTime
-  djName    String
-  venueName String?
-  guestCap  Int?
-  isClosed  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  guests    Guest[]
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  date         DateTime
+  djName       String
+  venueName    String?
+  guestCap     Int?
+  maxPerSignup Int      @default(10)
+  isClosed     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  guests       Guest[]
 }
 
 model Guest {

@@ -42,6 +42,14 @@ export async function POST(
       )
     }
 
+    // Check max per signup
+    if (parsedQuantity > gig.maxPerSignup) {
+      return NextResponse.json(
+        { error: `Maximum ${gig.maxPerSignup} guests per signup` },
+        { status: 400 }
+      )
+    }
+
     const currentTotal = gig.guests.reduce((sum, g) => sum + g.quantity, 0)
 
     if (gig.guestCap !== null) {

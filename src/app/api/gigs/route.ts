@@ -27,7 +27,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { date, djName, venueName, guestCap } = body
+    const { date, djName, venueName, guestCap, maxPerSignup } = body
 
     if (!date || !djName) {
       return NextResponse.json(
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
         djName,
         venueName: venueName || null,
         guestCap: guestCap ? parseInt(guestCap) : null,
+        maxPerSignup: maxPerSignup ? parseInt(maxPerSignup) : 10,
       },
     })
 

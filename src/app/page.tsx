@@ -25,6 +25,7 @@ export default function Home() {
     date: string
     djName: string
     guestCap: string | null
+    maxPerSignup: string
   } | null>(null)
   const [conflictingGigs, setConflictingGigs] = useState<ExistingGig[]>([])
 
@@ -85,10 +86,12 @@ export default function Home() {
 
     const formData = new FormData(e.currentTarget)
     const guestCapValue = formData.get('guestCap') as string
+    const maxPerSignupValue = formData.get('maxPerSignup') as string
     const data = {
       date: formData.get('date') as string,
       djName: formData.get('djName') as string,
       guestCap: guestCapValue && guestCapValue.trim() !== '' ? guestCapValue : null,
+      maxPerSignup: maxPerSignupValue || '10',
     }
 
     const gigsOnDate = getGigsOnDate(data.date)
@@ -251,7 +254,7 @@ export default function Home() {
 
           <div>
             <label htmlFor="guestCap" className="label">
-              Guest Cap
+              Guestlist Capacity
             </label>
             <input
               type="number"
@@ -263,6 +266,23 @@ export default function Home() {
             />
             <p className="text-sm text-gray-500 mt-1">
               Maximum total guests including +1s
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor="maxPerSignup" className="label">
+              Max Guests Per Signup
+            </label>
+            <input
+              type="number"
+              id="maxPerSignup"
+              name="maxPerSignup"
+              min="1"
+              defaultValue="10"
+              className="input-field rounded-2xl"
+            />
+            <p className="text-sm text-gray-500 mt-1">
+              Maximum +1s allowed per signup
             </p>
           </div>
 

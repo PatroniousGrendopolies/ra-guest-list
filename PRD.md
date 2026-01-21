@@ -2,7 +2,7 @@
 
 ### TL;DR
 
-A lightweight web app for nightclub bookers to rapidly create gig-specific guest list sign-up forms—DJs receive links to share, and guests simply enter their name, email, and number of +1s. All submissions are aggregated and exported as CSVs in the Resident Advisor format, with no login, payment, or check-in features—guaranteeing frictionless management for bookers and a seamless experience for guests.
+A lightweight web app for nightclub bookers to rapidly create gig-specific guest list sign-up forms—DJs receive links to share, and guests simply enter their name, email, and number of +1s. All submissions are aggregated and exported as CSVs in the Resident Advisor format, with no payment or check-in features—guaranteeing frictionless management for bookers and a seamless experience for guests. Future phases will add secure dashboard login, Google Calendar integration, and a contacts database to track repeat attendees.
 
 ---
 
@@ -30,7 +30,15 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
 
 * Prevent reliance on scattered emails or messy manual tracking.
 
-* Fast, mobile-friendly access—no required downloads or accounts.
+* Fast, mobile-friendly access—no required downloads or accounts for guests.
+
+### Future User Goals
+
+* Bookers can securely access their dashboard with protected login credentials.
+
+* Bookers can import events directly from Google Calendar to save time on gig creation.
+
+* Bookers can view contact history to identify loyal attendees and track engagement across events.
 
 ### Non-Goals
 
@@ -109,6 +117,78 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
   * Manual close for any live guest list.
 
   * Adjust guest cap before cut-off.
+
+* **Gig Editing (Priority: Medium)**
+
+  * Edit DJ/artist name after creation.
+
+  * Adjust guestlist capacity (cannot go below current guest count).
+
+  * Configure max guests per signup (default: 10).
+
+* **Guest Management (Priority: Medium)**
+
+  * Click on any guest row to edit their entry.
+
+  * Adjust number of guests per signup.
+
+  * Remove individual guests from the list.
+
+  * Admin edits can exceed normal limits.
+
+---
+
+## Future Development Pipeline
+
+The following features are planned for future releases:
+
+### Future User Stories
+
+* As a booker, I want to log in securely to access my dashboard, so that only authorized users can view and manage guest lists.
+
+* As a booker, I want to import events from my Google Calendar, so I can quickly create guest lists for scheduled gigs without manual data entry.
+
+* As a booker, I want to view a contacts page showing all past attendees, so I can see who my repeat guests are and which DJs they follow.
+
+* As a booker, I want to see how many gigs each contact has attended, so I can identify my most loyal guests.
+
+### Phase 4: Secure Dashboard Login
+
+* **Authentication**
+
+  * Secure login required for dashboard, gig creation, and contacts access.
+
+  * Session-based authentication with secure password storage.
+
+  * Guest sign-up forms remain publicly accessible (no login required for guests).
+
+  * Logout functionality with session invalidation.
+
+### Phase 5: Google Calendar Integration
+
+* **Calendar Import**
+
+  * OAuth integration with Google Calendar API.
+
+  * Display list of upcoming calendar events for selection.
+
+  * One-click import to create guest list from calendar event (pre-fills date, event name as DJ/artist).
+
+  * Option to select multiple events for bulk import.
+
+### Phase 6: Contacts & Attendee Analytics
+
+* **Contacts Page**
+
+  * Aggregate view of all unique attendees across all past gigs.
+
+  * Display: Name, Email, Total gigs attended, List of DJs they've signed up for.
+
+  * Sortable by name, email, or attendance count.
+
+  * Search/filter functionality to find specific contacts.
+
+  * Click-through to see full attendance history for each contact.
 
 ---
 
