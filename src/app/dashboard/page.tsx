@@ -152,7 +152,7 @@ export default function Dashboard() {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Guest Lists</h1>
+        <h1 className="text-2xl font-bold">Upcoming Guest Lists</h1>
         <div className="flex items-center gap-3">
           <div className="flex gap-1">
             <button
