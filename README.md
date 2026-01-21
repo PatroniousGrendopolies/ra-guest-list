@@ -7,6 +7,7 @@ A lightweight web app for nightclub bookers to create gig-specific guest list si
 ## Features
 
 - **Gig Creation** - Create guest lists with DJ name, date, venue, and optional guest caps
+- **Calendar Import** - Batch import events from Google Calendar (.ics files) with preview and editing
 - **Shareable Links** - Each gig gets a unique URL for DJs to share with their guests
 - **Guest Sign-up** - Mobile-friendly forms for guests to RSVP with +1s
 - **Dashboard** - List and calendar views to see all gigs, guest counts, close/reopen lists
@@ -93,9 +94,21 @@ npx prisma db push
 # Supabase PostgreSQL (production)
 DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
 DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:5432/postgres"
+
+# Email (for password reset - optional)
+RESEND_API_KEY="re_..."
 ```
 
 Get connection strings from the Supabase dashboard: **Connect** button > **ORMs** > **Prisma**
+
+## TODO / Pending Setup
+
+- [ ] **Resend API Key** - Set up [Resend](https://resend.com) for password reset emails:
+  1. Sign up at https://resend.com (free tier: 3,000 emails/month)
+  2. Create an API key
+  3. Add `RESEND_API_KEY` to Netlify environment variables (Site settings → Environment variables)
+
+  Without this, the app works fine but the "forgot password" feature won't send emails.
 
 ## Supabase MCP (for AI Agents)
 
@@ -143,6 +156,7 @@ Exports match Resident Advisor's expected format:
 ├── success/[slug]/page.tsx     # Success page
 ├── dashboard/
 │   ├── page.tsx                # Dashboard (list/calendar views)
+│   ├── import/page.tsx         # Calendar import wizard
 │   └── [slug]/page.tsx         # Gig detail with guest list
 └── api/gigs/                   # API routes
 
