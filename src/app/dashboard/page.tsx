@@ -272,8 +272,12 @@ export default function Dashboard() {
   // Filter gigs into upcoming and past
   const now = new Date()
   now.setHours(0, 0, 0, 0)
-  const upcomingGigs = gigs.filter((gig) => new Date(gig.date) >= now)
-  const pastGigs = gigs.filter((gig) => new Date(gig.date) < now)
+  const upcomingGigs = gigs
+    .filter((gig) => new Date(gig.date) >= now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Ascending: soonest first
+  const pastGigs = gigs
+    .filter((gig) => new Date(gig.date) < now)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Descending: most recent first
   const displayedGigs = showPastEvents ? pastGigs : upcomingGigs
 
   if (loading) {
@@ -330,6 +334,9 @@ export default function Dashboard() {
               </svg>
             </button>
           </div>
+          <a href="/dashboard/import" className="px-5 py-2 border border-gray-300 text-gray-600 text-sm rounded-full hover:bg-gray-50">
+            Import Calendar
+          </a>
           <a href="/" className="px-5 py-2 bg-gray-700 text-white text-sm rounded-full hover:bg-gray-800">
             Create New List
           </a>
