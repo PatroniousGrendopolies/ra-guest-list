@@ -221,9 +221,10 @@ export default function Dashboard() {
               className="card cursor-pointer rounded-3xl border-2 border-transparent hover:border-gray-300 transition-all duration-150"
               onClick={() => router.push(`/dashboard/${gig.slug}`)}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-col gap-3">
+                {/* Top row: DJ name + buttons */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center gap-2 flex-1">
                     <h2 className="font-semibold text-lg">{gig.djName}</h2>
                     {gig.isClosed && (
                       <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">
@@ -231,51 +232,71 @@ export default function Dashboard() {
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-sm">
-                    {formatDateShort(new Date(gig.date))}
-                    {gig.venueName && ` • ${gig.venueName}`}
-                  </p>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {gig.totalGuests} guest{gig.totalGuests !== 1 ? 's' : ''}
-                    {gig.guestCap && ` / ${gig.guestCap} cap`}
-                    {' • '}
-                    {gig.signUpCount} sign-up{gig.signUpCount !== 1 ? 's' : ''}
-                  </p>
+                  <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => copyLink(gig.slug)}
+                      className={`px-4 py-1.5 text-sm border rounded-full transition-all ${
+                        copiedSlug === gig.slug
+                          ? 'bg-[#5c7a6a] text-white border-emerald-600'
+                          : 'border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      {copiedSlug === gig.slug ? 'Copied!' : 'Copy Link'}
+                    </button>
+                    <button
+                      onClick={() => downloadCsv(gig.slug)}
+                      className="px-4 py-1.5 text-sm bg-[#5c7a6a] text-white rounded-full hover:bg-[#4a675a]"
+                    >
+                      Download CSV
+                    </button>
+                    <button
+                      onClick={() => toggleClose(gig.slug, gig.isClosed)}
+                      className="px-4 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
+                    >
+                      {gig.isClosed ? 'Reopen List' : 'Close List'}
+                    </button>
+                    <button
+                      onClick={() => deleteGig(gig.slug)}
+                      className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Delete"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    onClick={() => copyLink(gig.slug)}
-                    className={`px-4 py-1.5 text-sm border rounded-full transition-all ${
-                      copiedSlug === gig.slug
-                        ? 'bg-[#5c7a6a] text-white border-emerald-600'
-                        : 'border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {copiedSlug === gig.slug ? 'Copied!' : 'Copy Link'}
-                  </button>
-                  <button
-                    onClick={() => downloadCsv(gig.slug)}
-                    className="px-4 py-1.5 text-sm bg-[#5c7a6a] text-white rounded-full hover:bg-[#4a675a]"
-                  >
-                    Download CSV
-                  </button>
-                  <button
-                    onClick={() => toggleClose(gig.slug, gig.isClosed)}
-                    className="px-4 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
-                  >
-                    {gig.isClosed ? 'Reopen List' : 'Close List'}
-                  </button>
-                  <button
-                    onClick={() => deleteGig(gig.slug)}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
-                    title="Delete"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
+                {/* Date row */}
+                <p className="text-gray-600 text-sm">
+                  {formatDateShort(new Date(gig.date))}
+                  {gig.venueName && ` • ${gig.venueName}`}
+                </p>
+
+                {/* Progress bar */}
+                {gig.guestCap ? (
+                  <div>
+                    <div className="flex items-center h-5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gray-500 rounded-full flex items-center justify-end pr-2 min-w-[2.5rem]"
+                        style={{ width: `${Math.max((gig.totalGuests / gig.guestCap) * 100, 10)}%` }}
+                      >
+                        <span className="text-white text-xs font-medium">{gig.totalGuests}</span>
+                      </div>
+                      <div className="flex-1 flex items-center justify-end pr-2">
+                        <span className="text-gray-500 text-xs">{gig.guestCap}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between mt-1 text-xs text-gray-500">
+                      <span>Confirmed</span>
+                      <span>Spots available</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">
+                    {gig.totalGuests} guest{gig.totalGuests !== 1 ? 's' : ''} confirmed
+                  </p>
+                )}
               </div>
             </div>
           ))}

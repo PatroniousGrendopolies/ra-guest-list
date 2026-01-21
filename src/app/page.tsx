@@ -282,7 +282,7 @@ export default function Home() {
             href="/dashboard"
             className="block w-full px-5 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm rounded-full text-center"
           >
-            View existing guest lists
+            Return to Dashboard
           </a>
         </div>
       </div>
