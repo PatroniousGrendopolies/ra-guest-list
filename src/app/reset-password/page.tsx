@@ -44,9 +44,9 @@ export default function ResetPasswordPage() {
           <Image
             src="/datcha-logo-black.jpg"
             alt="Datcha"
-            width={150}
-            height={50}
-            className="h-12 w-auto"
+            width={235}
+            height={79}
+            className="h-[75px] w-auto"
           />
         </div>
 
