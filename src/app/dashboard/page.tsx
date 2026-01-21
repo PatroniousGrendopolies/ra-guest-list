@@ -19,6 +19,7 @@ export default function Dashboard() {
   const [gigs, setGigs] = useState<Gig[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [copiedSlug, setCopiedSlug] = useState<string | null>(null)
 
   async function fetchGigs() {
     try {
@@ -71,7 +72,8 @@ export default function Dashboard() {
   function copyLink(slug: string) {
     const url = `${window.location.origin}/gig/${slug}`
     navigator.clipboard.writeText(url)
-    alert('Link copied!')
+    setCopiedSlug(slug)
+    setTimeout(() => setCopiedSlug(null), 2000)
   }
 
   if (loading) {
@@ -136,9 +138,13 @@ export default function Dashboard() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => copyLink(gig.slug)}
-                    className="px-3 py-1.5 text-sm border border-gray-300 rounded hover:bg-gray-50"
+                    className={`px-3 py-1.5 text-sm border rounded transition-all ${
+                      copiedSlug === gig.slug
+                        ? 'bg-green-600 text-white border-green-600'
+                        : 'border-gray-300 hover:bg-gray-50'
+                    }`}
                   >
-                    Copy Link
+                    {copiedSlug === gig.slug ? 'Copied!' : 'Copy Link'}
                   </button>
                   <button
                     onClick={() => downloadCsv(gig.slug)}

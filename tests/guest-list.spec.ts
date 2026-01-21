@@ -19,7 +19,6 @@ test.describe('Gig Creation', () => {
     await expect(page.getByRole('heading', { name: 'Guest List Creator' })).toBeVisible()
     await expect(page.getByLabel(/DJ \/ Artist Name/)).toBeVisible()
     await expect(page.getByLabel(/Event Date/)).toBeVisible()
-    await expect(page.getByLabel(/Venue Name/)).toBeVisible()
     await expect(page.getByLabel(/Guest Cap/)).toBeVisible()
     await expect(page.getByRole('button', { name: 'Create Guest List Link' })).toBeVisible()
   })
@@ -38,13 +37,12 @@ test.describe('Gig Creation', () => {
     await expect(page.getByRole('button', { name: 'Copy Link' })).toBeVisible()
   })
 
-  test('should create a gig with all fields', async ({ page }) => {
+  test('should create a gig with custom guest cap', async ({ page }) => {
     await page.goto('/')
 
     const djName = uniqueName('DJ Complete')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
     await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Venue Name/).fill('Test Club')
     await page.getByLabel(/Guest Cap/).fill('50')
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
@@ -297,10 +295,8 @@ test.describe('Dashboard', () => {
     await page.goto('/')
 
     const djName = uniqueName('DJ Dashboard')
-    const venueName = uniqueName('Venue')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
     await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Venue Name/).fill(venueName)
     await page.getByLabel(/Guest Cap/).fill('100')
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
@@ -312,7 +308,6 @@ test.describe('Dashboard', () => {
     // Verify the gig card with unique DJ name contains expected details
     const gigCard = page.locator('.card', { hasText: djName })
     await expect(gigCard).toBeVisible()
-    await expect(gigCard.getByText(venueName)).toBeVisible()
     await expect(gigCard.getByText(/100 cap/)).toBeVisible()
   })
 

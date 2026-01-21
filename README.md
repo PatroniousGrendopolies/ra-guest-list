@@ -68,9 +68,18 @@ npx prisma db push
 
 ```bash
 # Supabase PostgreSQL (production)
-DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:5432/postgres"
+DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
 ```
+
+## Supabase MCP (for AI Agents)
+
+This project supports Supabase MCP for AI-assisted database management. See `AGENT_SETUP_INSTRUCTIONS.md` for details.
+
+**Quick setup:**
+1. Get an access token from https://supabase.com/dashboard/account/tokens
+2. Create `.mcp.json` with the MCP server config
+3. Restart your AI tool to load the configuration
 
 ## Running Tests
 

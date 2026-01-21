@@ -2,10 +2,38 @@
 
 These instructions are for an AI agent with access to Supabase MCP tools to set up the database for this project.
 
+## Project Configuration
+
+| Setting | Value |
+|---------|-------|
+| Project Ref | `iolpzqyxtpzetwevsfnl` |
+| Region | `ca-central-1` (Canada - Montreal) |
+| Dashboard | https://supabase.com/dashboard/project/iolpzqyxtpzetwevsfnl |
+
 ## Prerequisites
 
 - Supabase MCP server connected with valid access token
+- MCP configured in `.mcp.json` (see below)
 - The project repo cloned locally
+
+### MCP Configuration
+
+The `.mcp.json` file should contain:
+
+```json
+{
+  "mcpServers": {
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=iolpzqyxtpzetwevsfnl",
+      "headers": {
+        "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
+      }
+    }
+  }
+}
+```
+
+Get an access token from: https://supabase.com/dashboard/account/tokens
 
 ## Step 1: Create Database Tables
 

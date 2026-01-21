@@ -11,6 +11,7 @@ export default function Home() {
     slug: string
     djName: string
   } | null>(null)
+  const [copied, setCopied] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -52,6 +53,8 @@ export default function Home() {
 
   function copyToClipboard() {
     navigator.clipboard.writeText(getGuestListUrl())
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   if (createdGig) {
@@ -86,8 +89,11 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-3">
-            <button onClick={copyToClipboard} className="btn-primary">
-              Copy Link
+            <button
+              onClick={copyToClipboard}
+              className={`btn-primary transition-all ${copied ? 'bg-green-600 hover:bg-green-600' : ''}`}
+            >
+              {copied ? 'Copied!' : 'Copy Link'}
             </button>
             <button
               onClick={() => router.push('/dashboard')}
