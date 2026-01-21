@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Guest List Sign-Up Middleware
 
-## Getting Started
+A lightweight web app for nightclub bookers to create gig-specific guest list sign-up forms. DJs receive shareable links, guests enter their name/email/+1s, and bookers export CSVs in Resident Advisor format.
 
-First, run the development server:
+## Features
+
+- **Gig Creation** - Create guest lists with DJ name, date, venue, and optional guest caps
+- **Shareable Links** - Each gig gets a unique URL for DJs to share with their guests
+- **Guest Sign-up** - Mobile-friendly forms for guests to RSVP with +1s
+- **Dashboard** - View all gigs, guest counts, close/reopen lists
+- **CSV Export** - One-click download in Resident Advisor format
+- **Guest Cap Enforcement** - Automatic list closure when capacity is reached
+
+## Tech Stack
+
+- Next.js 14 (App Router)
+- TypeScript
+- Tailwind CSS
+- Prisma + PostgreSQL (Supabase)
+- Playwright (32 e2e tests)
+
+## Local Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up local SQLite database
+# Edit prisma/schema.prisma: change provider to "sqlite"
+# Edit .env: set DATABASE_URL="file:./dev.db"
+
+npx prisma migrate dev
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deploy to Netlify + Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Set up Supabase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **Project Settings > Database**
+3. Copy the connection strings:
+   - **Connection pooling** URL (for `DATABASE_URL`)
+   - **Direct connection** URL (for `DIRECT_URL`)
 
-## Learn More
+### 2. Run Database Migration
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Set your Supabase URLs
+export DATABASE_URL="postgresql://..."
+export DIRECT_URL="postgresql://..."
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Push schema to Supabase
+npx prisma db push
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Deploy to Netlify
 
-## Deploy on Vercel
+1. Connect your GitHub repo to [Netlify](https://netlify.com)
+2. Add environment variables:
+   - `DATABASE_URL` - Supabase pooling connection string
+   - `DIRECT_URL` - Supabase direct connection string
+3. Deploy!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Supabase PostgreSQL (production)
+DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:5432/postgres"
+```
+
+## Running Tests
+
+```bash
+npx playwright test
+```
+
+## CSV Export Format
+
+Exports match Resident Advisor's expected format:
+
+| Name | Company | Email | Quantity | Type |
+|------|---------|-------|----------|------|
+| Guest Name | | guest@email.com | 2 | |
+
+## License
+
+MIT
