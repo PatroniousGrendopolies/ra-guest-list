@@ -7,17 +7,29 @@ A lightweight web app for nightclub bookers to create gig-specific guest list si
 - **Gig Creation** - Create guest lists with DJ name, date, venue, and optional guest caps
 - **Shareable Links** - Each gig gets a unique URL for DJs to share with their guests
 - **Guest Sign-up** - Mobile-friendly forms for guests to RSVP with +1s
-- **Dashboard** - View all gigs, guest counts, close/reopen lists
+- **Dashboard** - List and calendar views to see all gigs, guest counts, close/reopen lists
 - **CSV Export** - One-click download in Resident Advisor format
 - **Guest Cap Enforcement** - Automatic list closure when capacity is reached
+- **Date Conflict Warning** - Confirmation popup when creating gig on date with existing events
+
+## Screenshots
+
+The app features a clean, pill-shaped button design with Helvetica font and muted color palette.
+
+### Pages
+- `/` - Create new guest list form
+- `/gig/[slug]` - Guest sign-up form (shareable link)
+- `/success/[slug]` - Sign-up confirmation page
+- `/dashboard` - View all gigs (list or calendar view)
+- `/dashboard/[slug]` - Gig detail with guest list table
 
 ## Tech Stack
 
 - Next.js 14 (App Router)
 - TypeScript
 - Tailwind CSS
-- Prisma + PostgreSQL (Supabase)
-- Playwright (32 e2e tests)
+- Prisma + SQLite (local) / PostgreSQL (production via Supabase)
+- Playwright (e2e tests)
 
 ## Local Development
 
@@ -25,15 +37,24 @@ A lightweight web app for nightclub bookers to create gig-specific guest list si
 # Install dependencies
 npm install
 
-# Set up local SQLite database
-# Edit prisma/schema.prisma: change provider to "sqlite"
-# Edit .env: set DATABASE_URL="file:./dev.db"
-
-npx prisma migrate dev
-
-# Run dev server
+# Run dev server (uses SQLite by default)
 npm run dev
+
+# Open http://localhost:3000
 ```
+
+## Database
+
+### Local Development (SQLite)
+The app uses SQLite for local development. The database file is at `prisma/dev.db`.
+
+```bash
+# Reset database
+rm prisma/dev.db && npx prisma db push
+```
+
+### Production (Supabase PostgreSQL)
+See deployment section below.
 
 ## Deploy to Netlify + Supabase
 
@@ -84,7 +105,11 @@ This project supports Supabase MCP for AI-assisted database management. See `AGE
 ## Running Tests
 
 ```bash
+# Run all tests
 npx playwright test
+
+# Run tests with UI
+npx playwright test --ui
 ```
 
 ## CSV Export Format
@@ -94,6 +119,39 @@ Exports match Resident Advisor's expected format:
 | Name | Company | Email | Quantity | Type |
 |------|---------|-------|----------|------|
 | Guest Name | | guest@email.com | 2 | |
+
+## UI Design System
+
+| Element | Tailwind Class |
+|---------|----------------|
+| Font | `font-[Helvetica,Arial,sans-serif]` |
+| Primary buttons | `bg-gray-700 rounded-full` |
+| CSV buttons | `bg-[#5c7a6a]` (muted sage) |
+| Card corners | `rounded-[2rem]` |
+| Input corners | `rounded-2xl` |
+
+## Project Structure
+
+```
+/src/app
+├── page.tsx                    # Create gig form
+├── gig/[slug]/page.tsx         # Guest sign-up form
+├── success/[slug]/page.tsx     # Success page
+├── dashboard/
+│   ├── page.tsx                # Dashboard (list/calendar views)
+│   └── [slug]/page.tsx         # Gig detail with guest list
+└── api/gigs/                   # API routes
+
+/public
+└── datcha-logo.png             # Logo
+
+/tests
+└── guest-list.spec.ts          # Playwright tests
+
+/prisma
+├── schema.prisma               # Database schema
+└── dev.db                      # Local SQLite database
+```
 
 ## License
 

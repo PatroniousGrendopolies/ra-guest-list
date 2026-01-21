@@ -46,3 +46,36 @@ body {
     @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
   }
 }
+
+/* Date picker styling for WebKit browsers (Chrome, Safari) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Style the date picker dropdown - WebKit */
+::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+/* Accent color for date picker selection */
+input[type="date"] {
+  accent-color: #374151; /* gray-700 - desaturated color */
+}
+
+/* For Chrome/Edge - style calendar popup */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  border-radius: 50%;
+  padding: 4px;
+}
+
+/* Firefox date picker accent color */
+@supports (-moz-appearance: none) {
+  input[type="date"] {
+    accent-color: #374151;
+  }
+}

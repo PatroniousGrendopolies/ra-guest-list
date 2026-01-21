@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 
 interface Gig {
@@ -34,12 +35,21 @@ export default function SuccessPage() {
   }, [slug])
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="card max-w-lg w-full text-center">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+      <div className="mb-8">
+        <Image
+          src="/datcha-logo.png"
+          alt="Datcha"
+          width={150}
+          height={50}
+          className="h-12 w-auto"
+        />
+      </div>
+      <div className="card max-w-lg w-full text-center rounded-3xl">
         <div className="mb-6">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-10 h-10 text-green-600"
+              className="w-10 h-10 text-emerald-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -59,7 +69,7 @@ export default function SuccessPage() {
         </div>
 
         {gig && (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 rounded-2xl p-4">
             <p className="font-medium text-lg">{gig.djName}</p>
             <p className="text-gray-600">{formatDate(new Date(gig.date))}</p>
             {gig.venueName && (

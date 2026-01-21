@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 
 interface Gig {
@@ -85,9 +86,18 @@ export default function GigSignUp() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+        <div className="mb-8">
+          <Image
+            src="/datcha-logo.png"
+            alt="Datcha"
+            width={150}
+            height={50}
+            className="h-12 w-auto"
+          />
+        </div>
         <div className="text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-black rounded-full mx-auto"></div>
+          <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </main>
@@ -96,8 +106,17 @@ export default function GigSignUp() {
 
   if (error && !gig) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="card max-w-lg w-full text-center">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+        <div className="mb-8">
+          <Image
+            src="/datcha-logo.png"
+            alt="Datcha"
+            width={150}
+            height={50}
+            className="h-12 w-auto"
+          />
+        </div>
+        <div className="card max-w-lg w-full text-center rounded-3xl">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-red-600"
@@ -130,8 +149,17 @@ export default function GigSignUp() {
 
   if (isUnavailable) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="card max-w-lg w-full text-center">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+        <div className="mb-8">
+          <Image
+            src="/datcha-logo.png"
+            alt="Datcha"
+            width={150}
+            height={50}
+            className="h-12 w-auto"
+          />
+        </div>
+        <div className="card max-w-lg w-full text-center rounded-3xl">
           <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-orange-600"
@@ -153,7 +181,7 @@ export default function GigSignUp() {
               ? 'This guest list has been closed.'
               : 'Sorry, the guest list is full!'}
           </p>
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div className="bg-gray-50 rounded-2xl p-4">
             <p className="font-medium">{gig.djName}</p>
             <p className="text-gray-600">{formatDate(new Date(gig.date))}</p>
             {gig.venueName && (
@@ -166,8 +194,17 @@ export default function GigSignUp() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="card max-w-lg w-full">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+      <div className="mb-8">
+        <Image
+          src="/datcha-logo.png"
+          alt="Datcha"
+          width={150}
+          height={50}
+          className="h-12 w-auto"
+        />
+      </div>
+      <div className="card max-w-lg w-full rounded-3xl">
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold mb-1">{gig.djName}</h1>
           <p className="text-gray-600">{formatDate(new Date(gig.date))}</p>
@@ -177,7 +214,7 @@ export default function GigSignUp() {
         </div>
 
         {remainingSpots !== null && remainingSpots <= 10 && (
-          <div className="bg-orange-50 text-orange-800 p-3 rounded-lg text-sm text-center mb-6">
+          <div className="bg-orange-50 text-orange-800 p-3 rounded-2xl text-sm text-center mb-6">
             Only {remainingSpots} spot{remainingSpots === 1 ? '' : 's'} remaining!
           </div>
         )}
@@ -192,7 +229,7 @@ export default function GigSignUp() {
               id="name"
               name="name"
               required
-              className="input-field"
+              className="input-field rounded-lg"
               placeholder="Full name"
               autoComplete="name"
             />
@@ -207,7 +244,7 @@ export default function GigSignUp() {
               id="email"
               name="email"
               required
-              className="input-field"
+              className="input-field rounded-lg"
               placeholder="your@email.com"
               autoComplete="email"
             />
@@ -225,7 +262,7 @@ export default function GigSignUp() {
               min="1"
               max={remainingSpots ?? undefined}
               defaultValue="1"
-              className="input-field"
+              className="input-field rounded-lg"
             />
             <p className="text-sm text-gray-500 mt-1">
               Include yourself and any +1s
@@ -240,7 +277,7 @@ export default function GigSignUp() {
 
           <button
             type="submit"
-            className="btn-primary w-full"
+            className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800"
             disabled={submitting}
           >
             {submitting ? 'Signing up...' : 'Sign Up'}

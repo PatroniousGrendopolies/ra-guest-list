@@ -1,7 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+
+interface ExistingGig {
+  id: string
+  date: string
+  djName: string
+}
 
 export default function Home() {
   const router = useRouter()
@@ -12,18 +19,45 @@ export default function Home() {
     djName: string
   } | null>(null)
   const [copied, setCopied] = useState(false)
+  const [existingGigs, setExistingGigs] = useState<ExistingGig[]>([])
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [pendingData, setPendingData] = useState<{
+    date: string
+    djName: string
+    guestCap: string | null
+  } | null>(null)
+  const [conflictingGigs, setConflictingGigs] = useState<ExistingGig[]>([])
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  useEffect(() => {
+    async function fetchGigs() {
+      try {
+        const response = await fetch('/api/gigs')
+        if (response.ok) {
+          const data = await response.json()
+          setExistingGigs(data)
+        }
+      } catch {
+        // Silently fail - not critical for form to work
+      }
+    }
+    fetchGigs()
+  }, [])
+
+  function getGigsOnDate(dateStr: string) {
+    return existingGigs.filter((gig) => {
+      const gigDate = new Date(gig.date)
+      const selectedDate = new Date(dateStr)
+      return (
+        gigDate.getFullYear() === selectedDate.getFullYear() &&
+        gigDate.getMonth() === selectedDate.getMonth() &&
+        gigDate.getDate() === selectedDate.getDate()
+      )
+    })
+  }
+
+  async function createGig(data: { date: string; djName: string; guestCap: string | null }) {
     setLoading(true)
     setError('')
-
-    const formData = new FormData(e.currentTarget)
-    const data = {
-      date: formData.get('date'),
-      djName: formData.get('djName'),
-      guestCap: formData.get('guestCap') || '75',
-    }
 
     try {
       const response = await fetch('/api/gigs', {
@@ -46,6 +80,43 @@ export default function Home() {
     }
   }
 
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+    const guestCapValue = formData.get('guestCap') as string
+    const data = {
+      date: formData.get('date') as string,
+      djName: formData.get('djName') as string,
+      guestCap: guestCapValue && guestCapValue.trim() !== '' ? guestCapValue : null,
+    }
+
+    const gigsOnDate = getGigsOnDate(data.date)
+    if (gigsOnDate.length > 0) {
+      setPendingData(data)
+      setConflictingGigs(gigsOnDate)
+      setShowConfirm(true)
+      return
+    }
+
+    await createGig(data)
+  }
+
+  function handleConfirm() {
+    if (pendingData) {
+      createGig(pendingData)
+    }
+    setShowConfirm(false)
+    setPendingData(null)
+    setConflictingGigs([])
+  }
+
+  function handleCancel() {
+    setShowConfirm(false)
+    setPendingData(null)
+    setConflictingGigs([])
+  }
+
   function getGuestListUrl() {
     if (!createdGig) return ''
     return `${window.location.origin}/gig/${createdGig.slug}`
@@ -57,14 +128,32 @@ export default function Home() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  function formatDate(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  }
+
   if (createdGig) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4">
-        <div className="card max-w-lg w-full text-center">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+        <div className="mb-8">
+          <Image
+            src="/datcha-logo.png"
+            alt="Datcha"
+            width={150}
+            height={50}
+            className="h-12 w-auto"
+          />
+        </div>
+        <div className="card max-w-lg w-full text-center rounded-[2rem]">
           <div className="mb-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-green-600"
+                className="w-8 h-8 text-emerald-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -83,7 +172,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="bg-gray-50 rounded-2xl p-4 mb-6">
             <p className="text-sm text-gray-500 mb-2">Guest list link:</p>
             <p className="font-mono text-sm break-all">{getGuestListUrl()}</p>
           </div>
@@ -91,13 +180,13 @@ export default function Home() {
           <div className="flex flex-col gap-3">
             <button
               onClick={copyToClipboard}
-              className={`btn-primary transition-all ${copied ? 'bg-green-600 hover:bg-green-600' : ''}`}
+              className={`px-5 py-2.5 rounded-full text-white transition-all ${copied ? 'bg-[#5c7a6a] hover:bg-[#5c7a6a]' : 'bg-gray-700 hover:bg-gray-800'}`}
             >
               {copied ? 'Copied!' : 'Copy Link'}
             </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="btn-secondary"
+              className="px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
             >
               View Dashboard
             </button>
@@ -114,8 +203,17 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4">
-      <div className="card max-w-lg w-full">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+      <div className="mb-8">
+        <Image
+          src="/datcha-logo.png"
+          alt="Datcha"
+          width={150}
+          height={50}
+          className="h-12 w-auto"
+        />
+      </div>
+      <div className="card max-w-lg w-full rounded-[2rem]">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold mb-2">Guest List Creator</h1>
           <p className="text-gray-600">
@@ -133,7 +231,7 @@ export default function Home() {
               id="djName"
               name="djName"
               required
-              className="input-field"
+              className="input-field rounded-2xl"
               placeholder="e.g. DJ Shadow"
             />
           </div>
@@ -147,7 +245,7 @@ export default function Home() {
               id="date"
               name="date"
               required
-              className="input-field"
+              className="input-field rounded-2xl"
             />
           </div>
 
@@ -161,7 +259,7 @@ export default function Home() {
               name="guestCap"
               min="1"
               defaultValue="75"
-              className="input-field"
+              className="input-field rounded-2xl"
             />
             <p className="text-sm text-gray-500 mt-1">
               Maximum total guests including +1s
@@ -174,20 +272,57 @@ export default function Home() {
             </div>
           )}
 
-          <button type="submit" className="btn-primary w-full" disabled={loading}>
+          <button type="submit" className="w-full px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800" disabled={loading}>
             {loading ? 'Creating...' : 'Create Guest List Link'}
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+        <div className="mt-6 pt-6 border-t border-gray-200">
           <a
             href="/dashboard"
-            className="text-gray-600 hover:text-black text-sm"
+            className="block w-full px-5 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm rounded-full text-center"
           >
             View existing guest lists
           </a>
         </div>
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-[2rem] max-w-md w-full p-6">
+            <h2 className="text-xl font-bold mb-4">Date Already Has Events</h2>
+            <p className="text-gray-600 mb-4">
+              There {conflictingGigs.length === 1 ? 'is' : 'are'} already {conflictingGigs.length} guest list{conflictingGigs.length !== 1 ? 's' : ''} on{' '}
+              <span className="font-medium">{pendingData && formatDate(pendingData.date)}</span>:
+            </p>
+            <ul className="bg-gray-50 rounded-2xl p-3 mb-4 space-y-2">
+              {conflictingGigs.map((gig) => (
+                <li key={gig.id} className="text-sm">
+                  <span className="font-medium">{gig.djName}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="text-gray-600 mb-6">
+              Do you want to create another guest list for this date?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancel}
+                className="flex-1 px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="flex-1 px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800"
+                disabled={loading}
+              >
+                {loading ? 'Creating...' : 'Yes, Create'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

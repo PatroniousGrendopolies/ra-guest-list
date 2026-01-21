@@ -5,11 +5,51 @@ function uniqueName(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
 }
 
-// Helper to get tomorrow's date in YYYY-MM-DD format
-function getTomorrowDate() {
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  return tomorrow.toISOString().split('T')[0]
+// Helper to get a unique future date to avoid date conflict popups
+let dateOffset = 2
+function getUniqueFutureDate() {
+  const date = new Date()
+  date.setDate(date.getDate() + dateOffset++)
+  return date.toISOString().split('T')[0]
+}
+
+// Helper to handle confirmation popup after clicking create
+async function handleConfirmPopupIfPresent(page: import('@playwright/test').Page) {
+  try {
+    const confirmButton = page.getByRole('button', { name: 'Yes, Create' })
+    await confirmButton.waitFor({ state: 'visible', timeout: 1000 })
+    await confirmButton.click()
+  } catch {
+    // No popup appeared, continue
+  }
+}
+
+// Helper to create a gig, handling the confirmation popup if it appears
+async function createGigAndGetSlug(page: import('@playwright/test').Page, djName: string, guestCap?: string): Promise<string> {
+  await page.goto('/')
+
+  await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
+  await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
+  if (guestCap) {
+    await page.getByLabel(/Guest Cap/).fill(guestCap)
+  }
+
+  await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+
+  // Handle confirmation popup if it appears (wait briefly then check)
+  try {
+    const confirmButton = page.getByRole('button', { name: 'Yes, Create' })
+    await confirmButton.waitFor({ state: 'visible', timeout: 1000 })
+    await confirmButton.click()
+  } catch {
+    // No popup appeared, continue
+  }
+
+  // Wait for success page
+  await page.waitForSelector('text=Guest List Created!', { timeout: 10000 })
+
+  const linkText = await page.locator('.font-mono').textContent()
+  return linkText!.split('/gig/')[1]
 }
 
 test.describe('Gig Creation', () => {
@@ -28,7 +68,7 @@ test.describe('Gig Creation', () => {
 
     const djName = uniqueName('DJ Test')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
 
@@ -42,10 +82,11 @@ test.describe('Gig Creation', () => {
 
     const djName = uniqueName('DJ Complete')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
     await page.getByLabel(/Guest Cap/).fill('50')
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+    await handleConfirmPopupIfPresent(page)
 
     await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
   })
@@ -53,7 +94,7 @@ test.describe('Gig Creation', () => {
   test('should require DJ name', async ({ page }) => {
     await page.goto('/')
 
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
 
     // HTML5 validation should prevent submission
@@ -76,8 +117,9 @@ test.describe('Gig Creation', () => {
     await page.goto('/')
 
     await page.getByLabel(/DJ \/ Artist Name/).fill(uniqueName('DJ First'))
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+    await handleConfirmPopupIfPresent(page)
 
     await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
 
@@ -90,8 +132,9 @@ test.describe('Gig Creation', () => {
     await page.goto('/')
 
     await page.getByLabel(/DJ \/ Artist Name/).fill(uniqueName('DJ Navigate'))
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+    await handleConfirmPopupIfPresent(page)
 
     await page.getByRole('button', { name: 'View Dashboard' }).click()
 
@@ -103,20 +146,8 @@ test.describe('Guest Sign-up', () => {
   let gigSlug: string
 
   test.beforeEach(async ({ page }) => {
-    // Create a fresh gig for each test
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Signup')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('10')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
-
-    // Extract slug from the displayed URL
-    const linkText = await page.locator('.font-mono').textContent()
-    gigSlug = linkText!.split('/gig/')[1]
+    // Create a fresh gig for each test using helper
+    gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Signup'), '10')
   })
 
   test('should display the guest sign-up form', async ({ page }) => {
@@ -193,18 +224,7 @@ test.describe('Guest Sign-up', () => {
 test.describe('Guest Cap Enforcement', () => {
   test('should prevent sign-up when list is full', async ({ page }) => {
     // Create a gig with cap of 2
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Cap')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('2')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
-
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Cap'), '2')
 
     // First sign-up: 2 guests (fills the cap)
     await page.goto(`/gig/${gigSlug}`)
@@ -224,16 +244,7 @@ test.describe('Guest Cap Enforcement', () => {
 
   test('should show remaining spots warning when low', async ({ page }) => {
     // Create a gig with cap of 5
-    await page.goto('/')
-
-    const djName = uniqueName('DJ LowCap')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('5')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ LowCap'), '5')
 
     // Sign up 3 guests, leaving 2 spots
     await page.goto(`/gig/${gigSlug}`)
@@ -250,16 +261,7 @@ test.describe('Guest Cap Enforcement', () => {
 
   test('should prevent signing up more than remaining spots', async ({ page }) => {
     // Create a gig with cap of 3
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Overflow')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('3')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Overflow'), '3')
 
     // Sign up 2 guests first
     await page.goto(`/gig/${gigSlug}`)
@@ -292,15 +294,8 @@ test.describe('Dashboard', () => {
 
   test('should show created gig in dashboard', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
     const djName = uniqueName('DJ Dashboard')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('100')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
+    await createGigAndGetSlug(page, djName, '100')
 
     // Navigate to dashboard
     await page.goto('/dashboard')
@@ -313,15 +308,8 @@ test.describe('Dashboard', () => {
 
   test('should update guest count after sign-up', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
     const djName = uniqueName('DJ Count')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, djName)
 
     // Sign up a guest with 3 people
     await page.goto(`/gig/${gigSlug}`)
@@ -341,15 +329,8 @@ test.describe('Dashboard', () => {
 
   test('should close and reopen a gig', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
     const djName = uniqueName('DJ Close')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, djName)
 
     // Go to dashboard and close the gig
     await page.goto('/dashboard')
@@ -377,14 +358,8 @@ test.describe('Dashboard', () => {
 
   test('should delete a gig', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
     const djName = uniqueName('DJ Delete')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    await expect(page.getByRole('heading', { name: 'Guest List Created!' })).toBeVisible()
+    await createGigAndGetSlug(page, djName)
 
     // Go to dashboard and delete
     await page.goto('/dashboard')
@@ -405,13 +380,8 @@ test.describe('Dashboard', () => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'])
 
     // Create a gig
-    await page.goto('/')
-
     const djName = uniqueName('DJ CopyLink')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+    await createGigAndGetSlug(page, djName)
 
     // Go to dashboard
     await page.goto('/dashboard')
@@ -432,15 +402,7 @@ test.describe('Dashboard', () => {
 test.describe('CSV Export', () => {
   test('should download CSV with correct format', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
-    const djName = uniqueName('DJ CSV')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ CSV'))
 
     // Add some guests
     await page.goto(`/gig/${gigSlug}`)
@@ -484,15 +446,7 @@ test.describe('CSV Export', () => {
 
   test('should handle special characters in CSV', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Special')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Special'))
 
     // Add a guest with special characters
     await page.goto(`/gig/${gigSlug}`)
@@ -512,15 +466,7 @@ test.describe('CSV Export', () => {
 
   test('should return empty CSV for gig with no guests', async ({ page }) => {
     // Create a gig
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Empty')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Empty'))
 
     // Download CSV without any guests
     const response = await page.request.get(`/api/gigs/${gigSlug}/csv`)
@@ -538,15 +484,7 @@ test.describe('CSV Export', () => {
 test.describe('Edge Cases', () => {
   test('should handle multiple sign-ups from same email', async ({ page }) => {
     // Per PRD: "No duplicate email checks—OK for multiple sign-ups from one address"
-    await page.goto('/')
-
-    const djName = uniqueName('DJ DupeEmail')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ DupeEmail'))
 
     // First sign-up
     await page.goto(`/gig/${gigSlug}`)
@@ -577,10 +515,13 @@ test.describe('Edge Cases', () => {
 
     const djName = uniqueName('DJ Unlimited')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    // Don't set guest cap
+    await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
+    // Clear guest cap for unlimited
+    await page.getByLabel(/Guest Cap/).clear()
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
+    await handleConfirmPopupIfPresent(page)
+    await page.waitForSelector('text=Guest List Created!', { timeout: 10000 })
     const linkText = await page.locator('.font-mono').textContent()
     const gigSlug = linkText!.split('/gig/')[1]
 
@@ -598,16 +539,8 @@ test.describe('Edge Cases', () => {
   })
 
   test('should handle rapid sequential sign-ups near cap', async ({ page }) => {
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Race')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('5')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    // Create a gig with cap of 5
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Race'), '5')
 
     // Sign up 4 guests
     await page.goto(`/gig/${gigSlug}`)
@@ -630,16 +563,7 @@ test.describe('Edge Cases', () => {
 
   test('should handle form reload after list closes', async ({ page }) => {
     // Per PRD: "If a guest reloads after list closes, form is not available"
-    await page.goto('/')
-
-    const djName = uniqueName('DJ Reload')
-    await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
-    await page.getByLabel(/Event Date/).fill(getTomorrowDate())
-    await page.getByLabel(/Guest Cap/).fill('1')
-
-    await page.getByRole('button', { name: 'Create Guest List Link' }).click()
-    const linkText = await page.locator('.font-mono').textContent()
-    const gigSlug = linkText!.split('/gig/')[1]
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Reload'), '1')
 
     // Open sign-up form in one tab
     await page.goto(`/gig/${gigSlug}`)
@@ -671,7 +595,7 @@ test.describe('Edge Cases', () => {
   test('should navigate from dashboard to create new', async ({ page }) => {
     await page.goto('/dashboard')
 
-    await page.getByRole('link', { name: '+ Create New' }).click()
+    await page.getByRole('link', { name: 'Create New List' }).click()
 
     await expect(page).toHaveURL('/')
     await expect(page.getByRole('heading', { name: 'Guest List Creator' })).toBeVisible()
