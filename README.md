@@ -2,6 +2,8 @@
 
 A lightweight web app for nightclub bookers to create gig-specific guest list sign-up forms. DJs receive shareable links, guests enter their name/email/+1s, and bookers export CSVs in Resident Advisor format.
 
+**Live at: https://ra-guest-list.netlify.app**
+
 ## Features
 
 - **Gig Creation** - Create guest lists with DJ name, date, venue, and optional guest caps
@@ -89,9 +91,11 @@ npx prisma db push
 
 ```bash
 # Supabase PostgreSQL (production)
-DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-ca-central-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
-DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-ca-central-1.pooler.supabase.com:5432/postgres"
+DATABASE_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[ref]:[pass]@aws-0-[region].pooler.supabase.com:5432/postgres"
 ```
+
+Get connection strings from the Supabase dashboard: **Connect** button > **ORMs** > **Prisma**
 
 ## Supabase MCP (for AI Agents)
 
