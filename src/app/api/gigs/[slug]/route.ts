@@ -73,6 +73,7 @@ export async function PATCH(
       where: { slug },
       data: {
         ...(body.djName !== undefined && { djName: body.djName }),
+        ...(body.date !== undefined && { date: new Date(body.date) }),
         ...(body.guestCap !== undefined && { guestCap: body.guestCap }),
         ...(body.maxPerSignup !== undefined && { maxPerSignup: body.maxPerSignup }),
         ...(body.isClosed !== undefined && { isClosed: body.isClosed }),

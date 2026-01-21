@@ -156,6 +156,10 @@ function GuestEditModal({ guest, gig: _gig, onClose, onSave }: GuestEditModalPro
 
 function EditModal({ gig, onClose, onSave }: EditModalProps) {
   const [djName, setDjName] = useState(gig.djName)
+  const [date, setDate] = useState(() => {
+    const d = new Date(gig.date)
+    return d.toISOString().split('T')[0]
+  })
   const [guestCap, setGuestCap] = useState<string>(gig.guestCap?.toString() || '')
   const [maxPerSignup, setMaxPerSignup] = useState<string>(gig.maxPerSignup?.toString() || '10')
   const [saving, setSaving] = useState(false)
@@ -172,6 +176,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           djName: djName.trim(),
+          date: new Date(date + 'T00:00:00').toISOString(),
           guestCap: guestCap ? parseInt(guestCap, 10) : null,
           maxPerSignup: maxPerSignup ? parseInt(maxPerSignup, 10) : 10,
         }),
@@ -208,6 +213,19 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
               type="text"
               value={djName}
               onChange={(e) => setDjName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Date
+            </label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
               required
             />
