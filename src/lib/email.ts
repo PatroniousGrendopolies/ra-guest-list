@@ -1,13 +1,25 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy-initialize to avoid build-time errors when env var is missing
+let resend: Resend | null = null
+function getResendClient(): Resend | null {
+  if (!resend && process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resend
+}
 
 export async function sendPasswordResetEmail(email: string, resetToken: string): Promise<boolean> {
+  const client = getResendClient()
+  if (!client) {
+    console.error('RESEND_API_KEY is not configured')
+    return false
+  }
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const resetUrl = `${baseUrl}/reset-password/${resetToken}`
 
   try {
-    await resend.emails.send({
+    await client.emails.send({
       from: 'Datcha Guest List <onboarding@resend.dev>',
       to: email,
       subject: 'Reset Your Password',
