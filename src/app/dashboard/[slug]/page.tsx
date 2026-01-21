@@ -285,6 +285,17 @@ export default function GigDetail() {
   const [copiedSlug, setCopiedSlug] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null)
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.push('/login')
+    } catch {
+      setLoggingOut(false)
+    }
+  }
 
   async function fetchGig() {
     try {
@@ -405,7 +416,7 @@ export default function GigDetail() {
         />
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => router.push('/dashboard')}
           className="text-gray-600 hover:text-gray-900 text-sm flex items-center gap-1"
@@ -414,6 +425,13 @@ export default function GigDetail() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           Back to Dashboard
+        </button>
+        <button
+          onClick={handleLogout}
+          disabled={loggingOut}
+          className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
+        >
+          {loggingOut ? 'Logging out...' : 'Logout'}
         </button>
       </div>
 

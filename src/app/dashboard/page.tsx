@@ -156,10 +156,21 @@ export default function Dashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [showPastEvents, setShowPastEvents] = useState(false)
   const [editingGig, setEditingGig] = useState<Gig | null>(null)
+  const [loggingOut, setLoggingOut] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
   })
+
+  async function handleLogout() {
+    setLoggingOut(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.push('/login')
+    } catch {
+      setLoggingOut(false)
+    }
+  }
 
   async function fetchGigs() {
     try {
@@ -322,6 +333,13 @@ export default function Dashboard() {
           <a href="/" className="px-5 py-2 bg-gray-700 text-white text-sm rounded-full hover:bg-gray-800">
             Create New List
           </a>
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
+          >
+            {loggingOut ? 'Logging out...' : 'Logout'}
+          </button>
         </div>
       </div>
 
