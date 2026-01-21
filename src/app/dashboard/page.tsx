@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [error, setError] = useState('')
   const [copiedSlug, setCopiedSlug] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('list')
+  const [showPastEvents, setShowPastEvents] = useState(false)
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date()
     return new Date(now.getFullYear(), now.getMonth(), 1)
@@ -128,6 +129,13 @@ export default function Dashboard() {
 
   const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
+  // Filter gigs into upcoming and past
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  const upcomingGigs = gigs.filter((gig) => new Date(gig.date) >= now)
+  const pastGigs = gigs.filter((gig) => new Date(gig.date) < now)
+  const displayedGigs = showPastEvents ? pastGigs : upcomingGigs
+
   if (loading) {
     return (
       <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
@@ -152,7 +160,7 @@ export default function Dashboard() {
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold">Upcoming Guest Lists</h1>
+        <h1 className="text-2xl font-bold">{showPastEvents ? 'Past Guest Lists' : 'Upcoming Guest Lists'}</h1>
         <div className="flex items-center gap-3">
           <div className="flex gap-1">
             <button
@@ -194,16 +202,20 @@ export default function Dashboard() {
         </div>
       )}
 
-      {gigs.length === 0 ? (
+      {displayedGigs.length === 0 ? (
         <div className="card text-center py-12">
-          <p className="text-gray-500 mb-4">No guest lists yet</p>
-          <a href="/" className="px-5 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 inline-block">
-            Create your first guest list
-          </a>
+          <p className="text-gray-500 mb-4">
+            {showPastEvents ? 'No past guest lists' : 'No upcoming guest lists'}
+          </p>
+          {!showPastEvents && (
+            <a href="/" className="px-5 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 inline-block">
+              Create your first guest list
+            </a>
+          )}
         </div>
       ) : viewMode === 'list' ? (
         <div className="space-y-4">
-          {gigs.map((gig) => (
+          {displayedGigs.map((gig) => (
             <div
               key={gig.id}
               className="card cursor-pointer rounded-3xl border-2 border-transparent hover:border-gray-300 transition-all duration-150"
@@ -365,6 +377,18 @@ export default function Dashboard() {
               )
             })}
           </div>
+        </div>
+      )}
+
+      {/* Past/Upcoming Events Toggle */}
+      {(showPastEvents ? upcomingGigs.length > 0 : pastGigs.length > 0) && (
+        <div className="text-center mt-8">
+          <button
+            onClick={() => setShowPastEvents(!showPastEvents)}
+            className="px-5 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-full hover:bg-gray-50"
+          >
+            {showPastEvents ? `View Upcoming Events (${upcomingGigs.length})` : `View Past Events (${pastGigs.length})`}
+          </button>
         </div>
       )}
     </main>
