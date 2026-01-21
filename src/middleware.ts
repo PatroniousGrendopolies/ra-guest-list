@@ -50,8 +50,27 @@ async function verifySessionToken(token: string): Promise<string | null> {
   }
 }
 
+// Check if this is a public guest-facing API route
+function isPublicGuestRoute(pathname: string, method: string): boolean {
+  // GET /api/gigs/[slug] - load gig details for signup page (but not /api/gigs which lists all)
+  if (method === 'GET' && pathname.match(/^\/api\/gigs\/[^/]+$/) && pathname !== '/api/gigs') {
+    return true
+  }
+  // POST /api/gigs/[slug]/guests - guest signup submission
+  if (method === 'POST' && pathname.match(/^\/api\/gigs\/[^/]+\/guests$/)) {
+    return true
+  }
+  return false
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const method = request.method
+
+  // Allow public guest-facing routes without authentication
+  if (isPublicGuestRoute(pathname, method)) {
+    return NextResponse.next()
+  }
 
   // Check if this is a protected page route
   const isProtectedPage = PROTECTED_PATHS.some((path) =>
