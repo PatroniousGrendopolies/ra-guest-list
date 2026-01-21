@@ -32,9 +32,11 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
 
 * Fast, mobile-friendly access—no required downloads or accounts for guests.
 
-### Future User Goals
+### Achieved User Goals
 
 * Bookers can securely access their dashboard with protected login credentials.
+
+### Future User Goals
 
 * Bookers can import events directly from Google Calendar to save time on gig creation.
 
@@ -138,31 +140,39 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
 
 ---
 
+## Completed Features
+
+### Phase 4: Secure Dashboard Login (Completed)
+
+* **Authentication**
+
+  * Secure login required for dashboard and API access (`/dashboard/*`, `/api/gigs/*`, `/api/guests/*`).
+
+  * Session-based authentication with secure password hashing (scrypt).
+
+  * Browser session cookies (logged out when browser closes).
+
+  * Guest sign-up forms remain publicly accessible (no login required for guests).
+
+  * Logout functionality with session invalidation.
+
+  * Password reset flow via email (Resend integration).
+
+  * Single admin user stored in database (`AdminConfig` model).
+
+---
+
 ## Future Development Pipeline
 
 The following features are planned for future releases:
 
 ### Future User Stories
 
-* As a booker, I want to log in securely to access my dashboard, so that only authorized users can view and manage guest lists.
-
 * As a booker, I want to import events from my Google Calendar, so I can quickly create guest lists for scheduled gigs without manual data entry.
 
 * As a booker, I want to view a contacts page showing all past attendees, so I can see who my repeat guests are and which DJs they follow.
 
 * As a booker, I want to see how many gigs each contact has attended, so I can identify my most loyal guests.
-
-### Phase 4: Secure Dashboard Login
-
-* **Authentication**
-
-  * Secure login required for dashboard, gig creation, and contacts access.
-
-  * Session-based authentication with secure password storage.
-
-  * Guest sign-up forms remain publicly accessible (no login required for guests).
-
-  * Logout functionality with session invalidation.
 
 ### Phase 5: Google Calendar Integration
 
@@ -196,11 +206,13 @@ The following features are planned for future releases:
 
 **Entry Point & First-Time User Experience**
 
-* Booker accesses the lightweight web app directly (unique URL), no sign-in or registration.
+* Booker accesses the dashboard via secure login (email + password authentication).
 
-* Booker immediately sees an uncluttered interface prompting gig details (date, DJ, guest cap).
+* After login, booker sees an uncluttered interface with all gigs and option to create new ones.
 
-* Generates a unique link with a single click—no onboarding, forms, or tutorials necessary.
+* Generates a unique link with a single click—no onboarding or tutorials necessary.
+
+* Guest sign-up forms remain publicly accessible (no login required for guests).
 
 **Core Experience**
 
@@ -230,11 +242,13 @@ The following features are planned for future releases:
 
 * **Step 4: Booker/Manager**
 
-  * Logs into dashboard (or opens direct manager link).
+  * Logs into dashboard with email and password at `/login`.
 
   * Sees table or list of upcoming gigs, with real-time guest counts.
 
-  * Clicks “Download CSV” for any gig; file downloaded instantly in Resident Advisor format.
+  * Clicks "Download CSV" for any gig; file downloaded instantly in Resident Advisor format.
+
+  * Can reset password via email link if forgotten.
 
 * **Step 5: Before Event**
 
