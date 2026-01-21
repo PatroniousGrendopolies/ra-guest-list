@@ -252,7 +252,7 @@ export default function Dashboard() {
                     onClick={() => toggleClose(gig.slug, gig.isClosed)}
                     className="px-4 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
                   >
-                    {gig.isClosed ? 'Reopen' : 'Close'}
+                    {gig.isClosed ? 'Reopen List' : 'Close List'}
                   </button>
                   <button
                     onClick={() => deleteGig(gig.slug)}

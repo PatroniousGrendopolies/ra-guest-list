@@ -18,6 +18,7 @@ export function formatDate(date: Date): string {
 
 export function formatDateShort(date: Date): string {
   return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
