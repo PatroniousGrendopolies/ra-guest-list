@@ -21,8 +21,7 @@ export default function Home() {
     const data = {
       date: formData.get('date'),
       djName: formData.get('djName'),
-      venueName: formData.get('venueName'),
-      guestCap: formData.get('guestCap'),
+      guestCap: formData.get('guestCap') || '75',
     }
 
     try {
@@ -147,29 +146,16 @@ export default function Home() {
           </div>
 
           <div>
-            <label htmlFor="venueName" className="label">
-              Venue Name (optional)
-            </label>
-            <input
-              type="text"
-              id="venueName"
-              name="venueName"
-              className="input-field"
-              placeholder="e.g. Club XYZ"
-            />
-          </div>
-
-          <div>
             <label htmlFor="guestCap" className="label">
-              Guest Cap (optional)
+              Guest Cap
             </label>
             <input
               type="number"
               id="guestCap"
               name="guestCap"
               min="1"
+              defaultValue="75"
               className="input-field"
-              placeholder="Leave empty for unlimited"
             />
             <p className="text-sm text-gray-500 mt-1">
               Maximum total guests including +1s
