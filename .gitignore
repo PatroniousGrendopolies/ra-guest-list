@@ -30,6 +30,9 @@ yarn-error.log*
 .env*.local
 .mcp.json
 handoff.md
+handoffsupabase.md
+HANDOFF*.md
+*.bak
 
 # database
 *.db
