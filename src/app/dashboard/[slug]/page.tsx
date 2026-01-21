@@ -364,7 +364,7 @@ export default function GigDetail() {
 
   if (loading) {
     return (
-      <main className="min-h-screen p-4 max-w-4xl mx-auto font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
         <div className="flex justify-center pt-4 mb-6">
           <Image
             src="/datcha-logo-black.jpg"
@@ -384,7 +384,7 @@ export default function GigDetail() {
 
   if (error || !gig) {
     return (
-      <main className="min-h-screen p-4 max-w-4xl mx-auto font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
         <div className="flex justify-center pt-4 mb-6">
           <Image
             src="/datcha-logo-black.jpg"
@@ -405,7 +405,7 @@ export default function GigDetail() {
   }
 
   return (
-    <main className="min-h-screen p-4 max-w-4xl mx-auto font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
       <div className="flex justify-center pt-4 mb-6">
         <Image
           src="/datcha-logo-black.jpg"
@@ -439,7 +439,7 @@ export default function GigDetail() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h1 className="text-2xl font-bold">{gig.djName}</h1>
+              <h1 className="text-lg font-semibold">{gig.djName}</h1>
               {gig.isClosed && (
                 <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">
                   Closed
