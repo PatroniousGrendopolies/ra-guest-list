@@ -145,7 +145,7 @@ export default function Home() {
       <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
         <div className="mb-8">
           <Image
-            src="/datcha-logo.png"
+            src="/datcha-logo-black.jpg"
             alt="Datcha"
             width={150}
             height={50}
@@ -209,7 +209,7 @@ export default function Home() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
       <div className="mb-8">
         <Image
-          src="/datcha-logo.png"
+          src="/datcha-logo-black.jpg"
           alt="Datcha"
           width={150}
           height={50}

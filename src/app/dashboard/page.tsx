@@ -291,7 +291,7 @@ export default function Dashboard() {
     <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
       <div className="flex justify-center pt-4 mb-6">
         <Image
-          src="/datcha-logo.png"
+          src="/datcha-logo-black.jpg"
           alt="Datcha"
           width={150}
           height={50}

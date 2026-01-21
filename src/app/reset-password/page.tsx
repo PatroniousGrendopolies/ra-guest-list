@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Image
-            src="/datcha-logo.png"
+            src="/datcha-logo-black.jpg"
             alt="Datcha"
             width={150}
             height={50}
