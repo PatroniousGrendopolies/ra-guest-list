@@ -66,6 +66,9 @@ export default function SuccessPage() {
           <p className="text-gray-600">
             Your spot has been reserved. See you there!
           </p>
+          <p className="text-gray-500 text-sm mt-3">
+            Resident Advisor will email your QR code ticket before the event.
+          </p>
         </div>
 
         {gig && (

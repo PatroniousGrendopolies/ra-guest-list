@@ -208,6 +208,7 @@ export default function GigSignUp() {
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold mb-1">{gig.djName}</h1>
           <p className="text-gray-600">{formatDate(new Date(gig.date))}</p>
+          <p className="text-gray-500 mt-2">Join the guestlist</p>
           {gig.venueName && (
             <p className="text-gray-500 text-sm">{gig.venueName}</p>
           )}
@@ -236,6 +237,7 @@ export default function GigSignUp() {
           </div>
 
           <div>
+            <p className="text-gray-500 text-sm mb-2">Guestlist tickets are sent via email</p>
             <label htmlFor="email" className="label">
               Email *
             </label>
