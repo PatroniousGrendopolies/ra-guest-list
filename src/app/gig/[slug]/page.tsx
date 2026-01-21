@@ -257,19 +257,26 @@ export default function GigSignUp() {
             <label htmlFor="quantity" className="label">
               Number of Guests (including yourself) *
             </label>
-            <input
-              type="number"
-              id="quantity"
-              name="quantity"
-              required
-              min="1"
-              max={remainingSpots !== null ? Math.min(gig.maxPerSignup, remainingSpots) : gig.maxPerSignup}
-              defaultValue="1"
-              className="input-field rounded-lg"
-            />
-            <p className="text-sm text-gray-500 mt-1">
-              Include yourself and any +1s (max {gig.maxPerSignup})
-            </p>
+            {(() => {
+              const effectiveMax = remainingSpots !== null ? Math.min(gig.maxPerSignup, remainingSpots) : gig.maxPerSignup
+              return (
+                <>
+                  <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    required
+                    min="1"
+                    max={effectiveMax}
+                    defaultValue="1"
+                    className="input-field rounded-lg"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    Include yourself and any +1s (max {effectiveMax})
+                  </p>
+                </>
+              )
+            })()}
           </div>
 
           {error && (
