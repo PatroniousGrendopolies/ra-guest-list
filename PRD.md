@@ -374,6 +374,17 @@ On a busy Friday afternoon, Ella, a nightclub booker, needs to organize the gues
 
 ---
 
+## Technical Debt / TODOs
+
+* **Hardcoded Venue Name in OG Meta Tags**: The Open Graph meta tags for gig sign-up links currently hardcode "at Datcha" in the title (e.g., "Sign up to the list for DJ Name tonight at Datcha"). When expanding to other venues:
+  - Populate the `venueName` column in the `Gig` table for all gigs
+  - Update `/src/app/gig/[slug]/page.tsx` to use `gig.venueName` instead of hardcoded "Datcha"
+  - Consider adding a default venue setting in `AdminConfig` for new gigs
+
+* **Resend Email Setup**: Email functionality for password reset requires Resend API key configuration.
+
+---
+
 ## Milestones & Sequencing
 
 ### Project Estimate
