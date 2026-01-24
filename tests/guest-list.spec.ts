@@ -31,7 +31,7 @@ async function createGigAndGetSlug(page: import('@playwright/test').Page, djName
   await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
   await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
   if (guestCap) {
-    await page.getByLabel(/Guest Cap/).fill(guestCap)
+    await page.getByLabel(/Guestlist Capacity/).fill(guestCap)
   }
 
   await page.getByRole('button', { name: 'Create Guest List Link' }).click()
@@ -59,7 +59,7 @@ test.describe('Gig Creation', () => {
     await expect(page.getByRole('heading', { name: 'Guest List Creator' })).toBeVisible()
     await expect(page.getByLabel(/DJ \/ Artist Name/)).toBeVisible()
     await expect(page.getByLabel(/Event Date/)).toBeVisible()
-    await expect(page.getByLabel(/Guest Cap/)).toBeVisible()
+    await expect(page.getByLabel(/Guestlist Capacity/)).toBeVisible()
     await expect(page.getByRole('button', { name: 'Create Guest List Link' })).toBeVisible()
   })
 
@@ -83,7 +83,7 @@ test.describe('Gig Creation', () => {
     const djName = uniqueName('DJ Complete')
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
     await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
-    await page.getByLabel(/Guest Cap/).fill('50')
+    await page.getByLabel(/Guestlist Capacity/).fill('50')
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
     await handleConfirmPopupIfPresent(page)
@@ -289,7 +289,7 @@ test.describe('Dashboard', () => {
     // In a real scenario, we'd have database cleanup between tests
     await page.goto('/dashboard')
 
-    await expect(page.getByRole('heading', { name: 'Guest Lists' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Guest Lists/ })).toBeVisible()
   })
 
   test('should show created gig in dashboard', async ({ page }) => {
@@ -482,8 +482,8 @@ test.describe('CSV Export', () => {
 })
 
 test.describe('Edge Cases', () => {
-  test('should handle multiple sign-ups from same email', async ({ page }) => {
-    // Per PRD: "No duplicate email checks—OK for multiple sign-ups from one address"
+  test('should reject duplicate email for same gig', async ({ page }) => {
+    // Duplicate emails are rejected to prevent guest cap bypass
     const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ DupeEmail'))
 
     // First sign-up
@@ -494,20 +494,60 @@ test.describe('Edge Cases', () => {
     await page.getByRole('button', { name: 'Sign Up' }).click()
     await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
 
-    // Second sign-up with same email
+    // Second sign-up with same email should be rejected
     await page.goto(`/gig/${gigSlug}`)
     await page.getByLabel(/Your Name/).fill('Same Person Again')
     await page.getByLabel(/Email/).fill('same@example.com')
     await page.getByLabel(/Number of Guests/).fill('2')
     await page.getByRole('button', { name: 'Sign Up' }).click()
+
+    // Should show duplicate email error
+    await expect(page.getByText(/This email is already on the guest list/)).toBeVisible()
+  })
+
+  test('should reject duplicate email regardless of case', async ({ page }) => {
+    // Case-insensitive email comparison (JOHN@x.com = john@x.com)
+    const gigSlug = await createGigAndGetSlug(page, uniqueName('DJ CaseEmail'))
+
+    // First sign-up with lowercase
+    await page.goto(`/gig/${gigSlug}`)
+    await page.getByLabel(/Your Name/).fill('John Doe')
+    await page.getByLabel(/Email/).fill('john@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByRole('button', { name: 'Sign Up' }).click()
     await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
 
-    // Verify both are in the CSV
-    const response = await page.request.get(`/api/gigs/${gigSlug}/csv`)
-    const csvContent = await response.text()
+    // Second sign-up with uppercase should also be rejected
+    await page.goto(`/gig/${gigSlug}`)
+    await page.getByLabel(/Your Name/).fill('JOHN DOE')
+    await page.getByLabel(/Email/).fill('JOHN@EXAMPLE.COM')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByRole('button', { name: 'Sign Up' }).click()
 
-    const sameEmailCount = (csvContent.match(/same@example\.com/g) || []).length
-    expect(sameEmailCount).toBe(2)
+    // Should show duplicate email error
+    await expect(page.getByText(/This email is already on the guest list/)).toBeVisible()
+  })
+
+  test('should allow same email for different gigs', async ({ page }) => {
+    // Same email should be allowed on different gigs
+    const gigSlug1 = await createGigAndGetSlug(page, uniqueName('DJ Gig1'))
+    const gigSlug2 = await createGigAndGetSlug(page, uniqueName('DJ Gig2'))
+
+    // Sign up for first gig
+    await page.goto(`/gig/${gigSlug1}`)
+    await page.getByLabel(/Your Name/).fill('Multi Guest')
+    await page.getByLabel(/Email/).fill('multi@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
+
+    // Sign up for second gig with same email should work
+    await page.goto(`/gig/${gigSlug2}`)
+    await page.getByLabel(/Your Name/).fill('Multi Guest')
+    await page.getByLabel(/Email/).fill('multi@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
   })
 
   test('should handle gig with no cap (unlimited)', async ({ page }) => {
@@ -517,7 +557,7 @@ test.describe('Edge Cases', () => {
     await page.getByLabel(/DJ \/ Artist Name/).fill(djName)
     await page.getByLabel(/Event Date/).fill(getUniqueFutureDate())
     // Clear guest cap for unlimited
-    await page.getByLabel(/Guest Cap/).clear()
+    await page.getByLabel(/Guestlist Capacity/).clear()
 
     await page.getByRole('button', { name: 'Create Guest List Link' }).click()
     await handleConfirmPopupIfPresent(page)
@@ -586,10 +626,10 @@ test.describe('Edge Cases', () => {
   test('should navigate from home to dashboard link', async ({ page }) => {
     await page.goto('/')
 
-    await page.getByRole('link', { name: 'View existing guest lists' }).click()
+    await page.getByRole('link', { name: 'Return to Dashboard' }).click()
 
     await expect(page).toHaveURL('/dashboard')
-    await expect(page.getByRole('heading', { name: 'Guest Lists' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Guest Lists/ })).toBeVisible()
   })
 
   test('should navigate from dashboard to create new', async ({ page }) => {

@@ -1,3 +1,5 @@
+// API endpoint for public guest signup - validates capacity and creates guest entry.
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
@@ -42,6 +44,24 @@ export async function POST(
       )
     }
 
+    // Normalize email for comparison and storage
+    const normalizedEmail = email.toLowerCase().trim()
+
+    // Check for duplicate email (case-insensitive)
+    const existingGuest = await prisma.guest.findFirst({
+      where: {
+        gigId: gig.id,
+        email: { equals: normalizedEmail, mode: 'insensitive' }
+      }
+    })
+
+    if (existingGuest) {
+      return NextResponse.json(
+        { error: 'This email is already on the guest list' },
+        { status: 409 }
+      )
+    }
+
     // Check max per signup
     if (parsedQuantity > gig.maxPerSignup) {
       return NextResponse.json(
@@ -76,7 +96,7 @@ export async function POST(
     const guest = await prisma.guest.create({
       data: {
         name,
-        email,
+        email: normalizedEmail,
         quantity: parsedQuantity,
         gigId: gig.id,
       },

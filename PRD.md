@@ -162,7 +162,7 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
 
 ---
 
-## Future Development Pipeline
+## Feature Roadmap
 
 The following features are planned for future releases:
 
@@ -174,31 +174,75 @@ The following features are planned for future releases:
 
 * As a booker, I want to see how many gigs each contact has attended, so I can identify my most loyal guests.
 
-### Phase 5: Google Calendar Integration
+* As a DJ, I want my own dashboard to review, edit, and approve my guest list before the event.
 
-* **Calendar Import**
+* As a DJ, I want to invite past attendees to my upcoming events so I can build a loyal following.
 
-  * OAuth integration with Google Calendar API.
+* As a manager, I want to add guest types (VIP, industry, etc.) that are visible only to staff.
 
-  * Display list of upcoming calendar events for selection.
+### Data Quality & Validation
 
-  * One-click import to create guest list from calendar event (pre-fills date, event name as DJ/artist).
+- [ ] **Duplicate Export Prevention** - Same guest won't be exported twice for the same event
 
-  * Option to select multiple events for bulk import.
+- [x] **Email Uniqueness Enforcement** - Same email can't sign up twice for the same gig (case-insensitive)
 
-### Phase 6: Contacts & Attendee Analytics
+### Sign-up Analytics
 
-* **Contacts Page**
+- [ ] **Sign-up Timestamps** - Store and display sign-up time for guests
 
-  * Aggregate view of all unique attendees across all past gigs.
+- [ ] **Sortable Guest List** - Sort by sign-up time
 
-  * Display: Name, Email, Total gigs attended, List of DJs they've signed up for.
+- [ ] **Sign-up Time Visualization** - Line chart showing sign-up distribution over time
 
-  * Sortable by name, email, or attendance count.
+### Form UX Improvements
 
-  * Search/filter functionality to find specific contacts.
+- [ ] **Dropdown Increments** - Dropdowns with preset increments for list creation (capacity, max per signup)
 
-  * Click-through to see full attendance history for each contact.
+### Calendar & Import
+
+- [ ] **Google Calendar OAuth** - OAuth integration with Google Calendar API for direct event import
+
+- [ ] **AI Calendar Import** - Parse calendars from text and images (not just .ics files)
+
+### Contact Management
+
+- [ ] **Contacts Page** - Aggregate view of all unique attendees across gigs with attendance history, sortable and searchable
+
+- [ ] **Mailing List / CRM** - Contact management with export functionality
+
+- [ ] **SMS Support** - SMS notifications for guests/DJs
+
+### DJ Portal
+
+- [ ] **DJ Dashboard** - Dedicated portal for DJs to manage their lists
+  - Review, edit, and approve guest list
+  - Mobile-friendly share button for bulk invites
+  - Generate distinct links per invited contact (prevents link reuse)
+
+- [ ] **DJ Past Attendee Invites** - DJs can invite guests who attended their previous events
+
+### Manager Features
+
+- [ ] **Types Column** - Hidden from guests, visible/editable by managers and DJs (default blank)
+
+- [ ] **RA Analytics Shortcuts** - Quick buttons linking to Resident Advisor event analytics
+
+### Platform & Branding
+
+- [ ] **Rebrand to Nightlist**
+  - New URL structure: `www.datcha.nightlist.com/dashboard`
+  - "Powered by Nightlist" beneath venue logo
+  - Multi-tenant architecture for multiple venues
+
+### Operations & Check-in
+
+- [ ] **Native Scanner** - Built-in QR/ticket scanner for door check-in
+
+- [ ] **API Push to RA** - Direct API integration to push guest lists to Resident Advisor
+
+### Advanced Integrations
+
+- [ ] **POS Integration** - Connect to point-of-sale for bar sales analytics per list attendee
 
 ---
 
