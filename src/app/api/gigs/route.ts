@@ -1,3 +1,5 @@
+// API endpoints for listing all gigs (GET) and creating a single gig (POST).
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { generateSlug } from '@/lib/utils'
@@ -11,11 +13,17 @@ export async function GET() {
       },
     })
 
-    const gigsWithCounts = gigs.map((gig) => ({
-      ...gig,
-      totalGuests: gig.guests.reduce((sum, g) => sum + g.quantity, 0),
-      signUpCount: gig.guests.length,
-    }))
+    const gigsWithCounts = gigs.map((gig) => {
+      const newGuestCount = gig.lastExportedAt
+        ? gig.guests.filter(g => new Date(g.createdAt) > new Date(gig.lastExportedAt!)).length
+        : 0
+      return {
+        ...gig,
+        totalGuests: gig.guests.reduce((sum, g) => sum + g.quantity, 0),
+        signUpCount: gig.guests.length,
+        newGuestCount,
+      }
+    })
 
     return NextResponse.json(gigsWithCounts)
   } catch (error) {

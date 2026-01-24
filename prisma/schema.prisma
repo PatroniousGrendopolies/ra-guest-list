@@ -20,8 +20,9 @@ model Gig {
   venueName    String?
   guestCap     Int?
   maxPerSignup Int      @default(10)
-  isClosed     Boolean  @default(false)
-  createdAt    DateTime @default(now())
+  isClosed       Boolean   @default(false)
+  lastExportedAt DateTime?
+  createdAt      DateTime  @default(now())
   updatedAt    DateTime @updatedAt
   guests       Guest[]
 }

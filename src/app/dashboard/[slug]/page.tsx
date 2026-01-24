@@ -1,3 +1,5 @@
+// Detail page for a single gig - view/edit guests and gig settings.
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -22,6 +24,7 @@ interface Gig {
   guestCap: number | null
   maxPerSignup: number
   isClosed: boolean
+  lastExportedAt: string | null
   totalGuests: number
   signUpCount: number
   guests: Guest[]
@@ -38,6 +41,11 @@ interface GuestEditModalProps {
   gig: Gig
   onClose: () => void
   onSave: () => void
+}
+
+function isNewGuest(guestCreatedAt: string, lastExportedAt: string | null): boolean {
+  if (!lastExportedAt) return false
+  return new Date(guestCreatedAt) > new Date(lastExportedAt)
 }
 
 function GuestEditModal({ guest, gig: _gig, onClose, onSave }: GuestEditModalProps) {
@@ -352,6 +360,10 @@ export default function GigDetail() {
     window.location.href = `/api/gigs/${slug}/csv`
   }
 
+  function downloadNewCsv() {
+    window.location.href = `/api/gigs/${slug}/csv?newOnly=true`
+  }
+
   async function toggleClose() {
     if (!gig) return
     try {
@@ -478,12 +490,35 @@ export default function GigDetail() {
             >
               {copiedSlug ? 'Copied!' : 'Copy Link'}
             </button>
-            <button
-              onClick={downloadCsv}
-              className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-full hover:bg-emerald-700"
-            >
-              Download CSV
-            </button>
+            {(() => {
+              const newGuestCount = gig.lastExportedAt
+                ? gig.guests.filter(g => isNewGuest(g.createdAt, gig.lastExportedAt)).length
+                : 0
+              const hasBeenExported = !!gig.lastExportedAt
+
+              return (
+                <>
+                  {newGuestCount > 0 && (
+                    <button
+                      onClick={downloadNewCsv}
+                      className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-full hover:bg-emerald-700"
+                    >
+                      Download CSV - New ({newGuestCount})
+                    </button>
+                  )}
+                  <button
+                    onClick={downloadCsv}
+                    className={`px-4 py-2 text-sm rounded-full ${
+                      hasBeenExported
+                        ? 'border border-gray-300 hover:bg-gray-50'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    }`}
+                  >
+                    {hasBeenExported ? 'Download CSV - All' : 'Download CSV'}
+                  </button>
+                </>
+              )
+            })()}
             <button
               onClick={toggleClose}
               className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
@@ -510,6 +545,18 @@ export default function GigDetail() {
             </button>
           </div>
         </div>
+
+        {gig.lastExportedAt && (
+          <p className="text-sm text-gray-500 mt-3">
+            Last exported: {new Date(gig.lastExportedAt).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+            })}
+          </p>
+        )}
 
         {/* Progress bar - full width */}
         {gig.guestCap && (
@@ -570,7 +617,16 @@ export default function GigDetail() {
                     className="border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => setEditingGuest(guest)}
                   >
-                    <td className="py-3 px-2">{guest.name}</td>
+                    <td className="py-3 px-2">
+                      <span className="flex items-center gap-2">
+                        {guest.name}
+                        {isNewGuest(guest.createdAt, gig.lastExportedAt) && (
+                          <span className="bg-emerald-100/60 text-emerald-600/80 text-xs px-2 py-0.5 rounded-full">
+                            NEW
+                          </span>
+                        )}
+                      </span>
+                    </td>
                     <td className="py-3 px-2 text-gray-600">{guest.email}</td>
                     <td className="py-3 px-2 text-center">{guest.quantity}</td>
                   </tr>

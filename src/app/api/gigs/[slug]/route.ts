@@ -1,3 +1,5 @@
+// API endpoints for a single gig: fetch details (GET), update (PATCH), delete (DELETE).
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
@@ -12,7 +14,7 @@ export async function GET(
       where: { slug },
       include: {
         guests: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: 'desc' },
         },
       },
     })

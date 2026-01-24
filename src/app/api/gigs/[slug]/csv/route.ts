@@ -1,3 +1,5 @@
+// API endpoint to export a gig's guest list as a CSV file.
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
@@ -7,24 +9,31 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
+    const url = new URL(request.url)
+    const newOnly = url.searchParams.get('newOnly') === 'true'
 
     const gig = await prisma.gig.findUnique({
       where: { slug },
-      include: {
-        guests: {
-          orderBy: { createdAt: 'asc' },
-        },
-      },
     })
 
     if (!gig) {
       return NextResponse.json({ error: 'Gig not found' }, { status: 404 })
     }
 
+    // Build guest filter: if newOnly and we have a lastExportedAt, only get guests added since then
+    const guestFilter = newOnly && gig.lastExportedAt
+      ? { createdAt: { gt: gig.lastExportedAt } }
+      : {}
+
+    const guests = await prisma.guest.findMany({
+      where: { gigId: gig.id, ...guestFilter },
+      orderBy: { createdAt: 'asc' },
+    })
+
     // Generate CSV in Resident Advisor format
     // Columns: Name, Company, Email, Quantity, Type
     const headers = ['Name', 'Company', 'Email', 'Quantity', 'Type']
-    const rows = gig.guests.map((guest) => [
+    const rows = guests.map((guest) => [
       escapeCsvField(guest.name),
       '', // Company - always blank
       escapeCsvField(guest.email),
@@ -38,6 +47,12 @@ export async function GET(
     ].join('\n')
 
     const filename = `guestlist-${gig.djName.replace(/\s+/g, '-').toLowerCase()}-${gig.date.toISOString().split('T')[0]}.csv`
+
+    // Update lastExportedAt timestamp
+    await prisma.gig.update({
+      where: { slug },
+      data: { lastExportedAt: new Date() },
+    })
 
     return new NextResponse(csvContent, {
       status: 200,

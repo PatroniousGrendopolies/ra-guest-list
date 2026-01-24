@@ -1,3 +1,5 @@
+// Admin dashboard showing all guest lists in list or calendar view.
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -14,8 +16,10 @@ interface Gig {
   guestCap: number | null
   maxPerSignup: number
   isClosed: boolean
+  lastExportedAt: string | null
   totalGuests: number
   signUpCount: number
+  newGuestCount: number
 }
 
 type ViewMode = 'list' | 'calendar'
@@ -238,6 +242,10 @@ export default function Dashboard() {
     window.location.href = `/api/gigs/${slug}/csv`
   }
 
+  function downloadNewCsv(slug: string) {
+    window.location.href = `/api/gigs/${slug}/csv?newOnly=true`
+  }
+
   function copyLink(slug: string) {
     const url = `${window.location.origin}/gig/${slug}`
     navigator.clipboard.writeText(url)
@@ -415,11 +423,23 @@ export default function Dashboard() {
                     >
                       {copiedSlug === gig.slug ? 'Copied!' : 'Copy Link'}
                     </button>
+                    {gig.newGuestCount > 0 && (
+                      <button
+                        onClick={() => downloadNewCsv(gig.slug)}
+                        className="px-4 py-1.5 text-sm bg-[#5c7a6a] text-white rounded-full hover:bg-[#4a675a]"
+                      >
+                        Download CSV - New ({gig.newGuestCount})
+                      </button>
+                    )}
                     <button
                       onClick={() => downloadCsv(gig.slug)}
-                      className="px-4 py-1.5 text-sm bg-[#5c7a6a] text-white rounded-full hover:bg-[#4a675a]"
+                      className={`px-4 py-1.5 text-sm rounded-full ${
+                        gig.lastExportedAt
+                          ? 'border border-gray-300 hover:bg-gray-50'
+                          : 'bg-[#5c7a6a] text-white hover:bg-[#4a675a]'
+                      }`}
                     >
-                      Download CSV
+                      {gig.lastExportedAt ? 'Download CSV - All' : 'Download CSV'}
                     </button>
                     <button
                       onClick={() => toggleClose(gig.slug, gig.isClosed)}
