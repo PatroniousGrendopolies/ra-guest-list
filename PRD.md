@@ -244,6 +244,13 @@ The following features are planned for future releases:
 
 - [ ] **POS Integration** - Connect to point-of-sale for bar sales analytics per list attendee
 
+### Testing & Development
+
+- [ ] **Test Authentication** - Set up test credentials and login flow for Playwright tests
+  - Create test user seeding script
+  - Add login helper to test suite
+  - Ensure tests can run in CI without manual setup
+
 ---
 
 ## User Experience
