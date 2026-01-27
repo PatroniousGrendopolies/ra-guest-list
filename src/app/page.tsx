@@ -1,3 +1,5 @@
+// Home page form for creating a new guest list.
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -142,7 +144,7 @@ export default function Home() {
 
   if (createdGig) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#fcfcfd]">
         <div className="mb-8">
           <Image
             src="/datcha-logo-black.jpg"
@@ -152,11 +154,11 @@ export default function Home() {
             className="h-[75px] w-auto"
           />
         </div>
-        <div className="card max-w-lg w-full text-center rounded-[2rem]">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-lg w-full text-center">
           <div className="mb-6">
-            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="w-8 h-8 text-emerald-600"
+                className="w-8 h-8 text-gray-700"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -175,7 +177,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6">
+          <div className="bg-gray-50 rounded-3xl p-4 mb-6">
             <p className="text-sm text-gray-500 mb-2">Guest list link:</p>
             <p className="font-mono text-sm break-all">{getGuestListUrl()}</p>
           </div>
@@ -183,19 +185,19 @@ export default function Home() {
           <div className="flex flex-col gap-3">
             <button
               onClick={copyToClipboard}
-              className={`px-5 py-2.5 rounded-full text-white transition-all ${copied ? 'bg-[#5c7a6a] hover:bg-[#5c7a6a]' : 'bg-gray-700 hover:bg-gray-800'}`}
+              className={`px-5 py-2.5 rounded-full font-medium text-white transition-colors ${copied ? 'bg-gray-900 hover:bg-gray-800' : 'bg-gray-900 hover:bg-gray-800'}`}
             >
               {copied ? 'Copied!' : 'Copy Link'}
             </button>
             <button
               onClick={() => router.push('/dashboard')}
-              className="px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
             >
               View Dashboard
             </button>
             <button
               onClick={() => setCreatedGig(null)}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-500 hover:text-gray-700 transition-colors"
             >
               Create Another
             </button>
@@ -206,7 +208,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#fcfcfd]">
       <div className="mb-8">
         <Image
           src="/datcha-logo-black.jpg"
@@ -216,9 +218,9 @@ export default function Home() {
           className="h-[75px] w-auto"
         />
       </div>
-      <div className="card max-w-lg w-full rounded-[2rem]">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-lg w-full">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold mb-2">Guest List Creator</h1>
+          <h1 className="text-2xl font-medium mb-2">Guest List Creator</h1>
           <p className="text-gray-600">
             Create a sign-up link for your event&apos;s guest list
           </p>
@@ -234,7 +236,7 @@ export default function Home() {
               id="djName"
               name="djName"
               required
-              className="input-field rounded-2xl"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
               placeholder="e.g. DJ Shadow"
             />
           </div>
@@ -248,7 +250,7 @@ export default function Home() {
               id="date"
               name="date"
               required
-              className="input-field rounded-2xl"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
           </div>
 
@@ -262,7 +264,7 @@ export default function Home() {
               name="guestCap"
               min="1"
               defaultValue="75"
-              className="input-field rounded-2xl"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
             <p className="text-sm text-gray-500 mt-1">
               Maximum total guests including +1s
@@ -279,7 +281,7 @@ export default function Home() {
               name="maxPerSignup"
               min="1"
               defaultValue="10"
-              className="input-field rounded-2xl"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
             <p className="text-sm text-gray-500 mt-1">
               Maximum +1s allowed per signup
@@ -287,12 +289,15 @@ export default function Home() {
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-              {error}
+            <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl text-sm flex items-start gap-3">
+              <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{error}</span>
             </div>
           )}
 
-          <button type="submit" className="w-full px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800" disabled={loading}>
+          <button type="submit" className="w-full px-5 py-2.5 bg-gray-400 text-white rounded-full font-medium hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled={loading}>
             {loading ? 'Creating...' : 'Create Guest List Link'}
           </button>
         </form>
@@ -300,7 +305,7 @@ export default function Home() {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <a
             href="/dashboard"
-            className="block w-full px-5 py-2.5 border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm rounded-full text-center"
+            className="block w-full px-5 py-2.5 border border-gray-300 text-gray-700 hover:bg-gray-50 text-sm rounded-full font-medium text-center transition-colors"
           >
             Return to Dashboard
           </a>
@@ -309,13 +314,13 @@ export default function Home() {
 
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-[2rem] max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 max-w-md w-full p-6">
             <h2 className="text-xl font-bold mb-4">Date Already Has Events</h2>
             <p className="text-gray-600 mb-4">
               There {conflictingGigs.length === 1 ? 'is' : 'are'} already {conflictingGigs.length} guest list{conflictingGigs.length !== 1 ? 's' : ''} on{' '}
               <span className="font-medium">{pendingData && formatDate(pendingData.date)}</span>:
             </p>
-            <ul className="bg-gray-50 rounded-2xl p-3 mb-4 space-y-2">
+            <ul className="bg-gray-50 rounded-3xl p-3 mb-4 space-y-2">
               {conflictingGigs.map((gig) => (
                 <li key={gig.id} className="text-sm">
                   <span className="font-medium">{gig.djName}</span>
@@ -328,13 +333,13 @@ export default function Home() {
             <div className="flex gap-3">
               <button
                 onClick={handleCancel}
-                className="flex-1 px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+                className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800"
+                className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 {loading ? 'Creating...' : 'Yes, Create'}

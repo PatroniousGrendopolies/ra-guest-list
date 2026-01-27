@@ -1,3 +1,5 @@
+// Success confirmation page shown after a guest signs up.
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -35,7 +37,7 @@ export default function SuccessPage() {
   }, [slug])
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center p-4 font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#fcfcfd]">
       <div className="mb-8">
         <Image
           src="/datcha-logo-black.jpg"
@@ -45,11 +47,11 @@ export default function SuccessPage() {
           className="h-[75px] w-auto"
         />
       </div>
-      <div className="card max-w-lg w-full text-center rounded-3xl">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 max-w-lg w-full text-center">
         <div className="mb-6">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-10 h-10 text-emerald-600"
+              className="w-10 h-10 text-gray-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -72,7 +74,7 @@ export default function SuccessPage() {
         </div>
 
         {gig && (
-          <div className="bg-gray-50 rounded-2xl p-4">
+          <div className="bg-gray-50 rounded-3xl p-4">
             <p className="font-medium text-lg">{gig.djName}</p>
             <p className="text-gray-600">{formatDate(new Date(gig.date))}</p>
             {gig.venueName && (

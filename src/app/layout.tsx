@@ -1,3 +1,5 @@
+// Root layout with global styles and metadata for the app.
+
 import type { Metadata } from 'next'
 import './globals.css'
 
@@ -13,6 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://fonts.cdnfonts.com/css/tasa-orbiter-display"
+          rel="stylesheet"
+        />
+      </head>
       <body className="antialiased">{children}</body>
     </html>
   )

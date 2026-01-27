@@ -75,40 +75,40 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl p-6 w-full max-w-md"
+        className="bg-white rounded-2xl border border-gray-200 p-6 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold mb-4">Edit Guest List</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               DJ / Artist Name
             </label>
             <input
               type="text"
               value={djName}
               onChange={(e) => setDjName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Date
             </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Guest Cap {gig.totalGuests > 0 && <span className="text-gray-500 font-normal">(min: {gig.totalGuests})</span>}
             </label>
             <input
@@ -117,7 +117,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
               onChange={(e) => setGuestCap(e.target.value)}
               min={gig.totalGuests || 1}
               placeholder="No limit"
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
             {gig.totalGuests > 0 && (
               <p className="text-xs text-gray-500 mt-1">
@@ -127,7 +127,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Max Guests Per Signup
             </label>
             <input
@@ -135,7 +135,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
               value={maxPerSignup}
               onChange={(e) => setMaxPerSignup(e.target.value)}
               min={1}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
             <p className="text-xs text-gray-500 mt-1">
               Maximum +1s allowed per signup
@@ -143,21 +143,21 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl text-sm">{error}</div>
           )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
               disabled={saving}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={saving || !djName.trim()}
             >
               {saving ? 'Saving...' : 'Save'}
@@ -308,9 +308,9 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen p-4 max-w-6xl mx-auto bg-[#fcfcfd]" >
         <div className="text-center py-20">
-          <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-black rounded-full mx-auto"></div>
+          <div className="animate-spin w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </main>
@@ -318,7 +318,7 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen p-4 max-w-6xl mx-auto bg-[#fcfcfd]" >
       <div className="flex justify-center pt-4 mb-6">
         <Image
           src="/datcha-logo-black.jpg"
@@ -335,10 +335,10 @@ export default function Dashboard() {
           <div className="flex gap-1">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 rounded-full ${
+              className={`p-2 rounded-full transition-colors ${
                 viewMode === 'list'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-gray-600'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
               }`}
               title="List view"
             >
@@ -348,10 +348,10 @@ export default function Dashboard() {
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`p-2 rounded-full ${
+              className={`p-2 rounded-full transition-colors ${
                 viewMode === 'calendar'
-                  ? 'bg-gray-700 text-white'
-                  : 'text-gray-400 hover:text-gray-600'
+                  ? 'bg-gray-900 text-white'
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
               }`}
               title="Calendar view"
             >
@@ -360,16 +360,16 @@ export default function Dashboard() {
               </svg>
             </button>
           </div>
-          <a href="/dashboard/import" className="px-5 py-2 border border-gray-300 text-gray-600 text-sm rounded-full hover:bg-gray-50">
+          <a href="/dashboard/import" className="px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-full font-medium hover:bg-gray-50 transition-colors">
             Import Calendar
           </a>
-          <a href="/" className="px-5 py-2 bg-gray-700 text-white text-sm rounded-full hover:bg-gray-800">
+          <a href="/" className="px-4 py-2 bg-gray-900 text-white text-sm rounded-full font-medium hover:bg-gray-800 transition-colors">
             Create New List
           </a>
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
+            className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loggingOut ? 'Logging out...' : 'Logout'}
           </button>
@@ -377,18 +377,18 @@ export default function Dashboard() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg mb-6">
+        <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl mb-6">
           {error}
         </div>
       )}
 
       {displayedGigs.length === 0 ? (
-        <div className="card text-center py-12">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center py-12">
           <p className="text-gray-500 mb-4">
             {showPastEvents ? 'No past guest lists' : 'No upcoming guest lists'}
           </p>
           {!showPastEvents && (
-            <a href="/" className="px-5 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 inline-block">
+            <a href="/" className="px-4 py-2 text-sm bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors inline-block">
               Create your first guest list
             </a>
           )}
@@ -398,27 +398,27 @@ export default function Dashboard() {
           {displayedGigs.map((gig) => (
             <div
               key={gig.id}
-              className="card cursor-pointer rounded-3xl border-2 border-transparent hover:border-gray-300 transition-all duration-150"
+              className="bg-white rounded-2xl border border-gray-200 p-6 cursor-pointer hover:border-gray-300 transition-all duration-150"
               onClick={() => router.push(`/dashboard/${gig.slug}`)}
             >
               <div className="flex flex-col gap-3">
                 {/* Top row: DJ name + buttons */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="flex items-center gap-2 flex-1">
+                <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                  <div className="flex items-center gap-2 max-w-[50%]">
                     <h2 className="font-semibold text-lg">{gig.djName}</h2>
                     {gig.isClosed && (
-                      <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">
+                      <span className="bg-gray-200 text-gray-900 text-xs px-2.5 py-1 rounded-full inline-flex items-center">
                         Closed
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex-1 flex flex-wrap gap-2 justify-end" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => copyLink(gig.slug)}
-                      className={`px-4 py-1.5 text-sm border rounded-full transition-all ${
+                      className={`px-3 py-1.5 text-xs border-[1.5px] rounded-full font-medium transition-colors ${
                         copiedSlug === gig.slug
-                          ? 'bg-[#5c7a6a] text-white border-emerald-600'
-                          : 'border-gray-300 hover:bg-gray-50'
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'border-gray-400 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       {copiedSlug === gig.slug ? 'Copied!' : 'Copy Link'}
@@ -426,24 +426,26 @@ export default function Dashboard() {
                     {gig.newGuestCount > 0 && (
                       <button
                         onClick={() => downloadNewCsv(gig.slug)}
-                        className="px-4 py-1.5 text-sm bg-[#5c7a6a] text-white rounded-full hover:bg-[#4a675a]"
+                        className="px-3 py-1.5 text-xs bg-gray-200 text-gray-600 rounded-full font-medium hover:bg-gray-300 transition-colors"
                       >
                         Download CSV - New ({gig.newGuestCount})
                       </button>
                     )}
                     <button
                       onClick={() => downloadCsv(gig.slug)}
-                      className={`px-4 py-1.5 text-sm rounded-full ${
+                      className={`px-3 py-1.5 text-xs rounded-full font-medium transition-colors ${
                         gig.lastExportedAt
-                          ? 'border border-gray-300 hover:bg-gray-50'
-                          : 'bg-[#5c7a6a] text-white hover:bg-[#4a675a]'
+                          ? 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                       }`}
                     >
                       {gig.lastExportedAt ? 'Download CSV - All' : 'Download CSV'}
                     </button>
+                    {/* Force wrap when Download CSV - New is visible */}
+                    {gig.newGuestCount > 0 && <div className="basis-full h-0" />}
                     <button
                       onClick={() => toggleClose(gig.slug, gig.isClosed)}
-                      className="px-4 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
+                      className="px-3 py-1.5 text-xs border border-gray-200 text-gray-400 rounded-full font-medium hover:bg-gray-50 transition-colors"
                     >
                       {gig.isClosed ? 'Reopen List' : 'Close List'}
                     </button>
@@ -483,19 +485,13 @@ export default function Dashboard() {
                       const isFull = gig.totalGuests >= gig.guestCap
                       const showCapNumber = percentage < 85
                       return (
-                        <div className="flex items-center h-5 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                           {!isEmpty && (
                             <div
-                              className={`h-full bg-gray-500 flex items-center justify-end pr-2 min-w-[2.5rem] ${isFull ? 'rounded-full' : 'rounded-full'}`}
+                              className={`h-full bg-gray-900 rounded-full flex items-center justify-end pr-2 min-w-[2.5rem]`}
                               style={{ width: isFull ? '100%' : `${Math.max(percentage, 10)}%` }}
                             >
                               <span className="text-white text-xs font-medium">{gig.totalGuests}</span>
-                            </div>
-                          )}
-                          {!isFull && (
-                            <div className={`flex-1 flex items-center pr-2 ${isEmpty ? 'justify-between pl-2' : 'justify-end'}`}>
-                              {isEmpty && <span className="text-gray-500 text-xs">0</span>}
-                              <span className={`text-gray-500 text-xs ${!showCapNumber && !isEmpty ? 'hidden' : ''}`}>{gig.guestCap}</span>
                             </div>
                           )}
                         </div>
@@ -503,7 +499,7 @@ export default function Dashboard() {
                     })()}
                     <div className="flex justify-between mt-1 text-xs text-gray-500">
                       <span>Confirmed</span>
-                      <span>Spots available</span>
+                      <span>{gig.guestCap - gig.totalGuests} spots available</span>
                     </div>
                   </div>
                 ) : (
@@ -516,11 +512,11 @@ export default function Dashboard() {
           ))}
         </div>
       ) : (
-        <div className="card rounded-3xl">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={prevMonth}
-              className="p-2 hover:bg-gray-100 rounded"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -529,7 +525,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold">{monthName}</h2>
             <button
               onClick={nextMonth}
-              className="p-2 hover:bg-gray-100 rounded"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -566,10 +562,10 @@ export default function Dashboard() {
                         dayGigs.map((gig) => (
                           <div
                             key={gig.id}
-                            className={`h-full p-2 rounded-xl text-xs cursor-pointer border-2 hover:border-gray-400 transition-all duration-150 flex flex-col ${
+                            className={`h-full p-2 rounded-xl text-xs cursor-pointer border hover:border-gray-400 transition-all duration-150 flex flex-col ${
                               gig.isClosed
-                                ? 'bg-red-50 border-red-200'
-                                : 'bg-blue-50 border-blue-200'
+                                ? 'bg-gray-50 border-gray-200'
+                                : 'bg-white border-gray-200'
                             }`}
                             onClick={() => router.push(`/dashboard/${gig.slug}`)}
                           >
@@ -583,7 +579,7 @@ export default function Dashboard() {
                             <div className="flex-1" />
                             {/* Progress bar */}
                             {gig.guestCap ? (
-                              <div className="mb-1">
+                              <div className="mb-2">
                                 {(() => {
                                   const pct = (gig.totalGuests / gig.guestCap) * 100
                                   const isFull = gig.totalGuests >= gig.guestCap
@@ -609,7 +605,7 @@ export default function Dashboard() {
                                 })()}
                               </div>
                             ) : (
-                              <div className="text-gray-500 mb-1 text-[10px]">
+                              <div className="text-gray-500 mb-2 text-[10px]">
                                 {gig.totalGuests} guests
                               </div>
                             )}
@@ -620,9 +616,9 @@ export default function Dashboard() {
                             >
                               <button
                                 onClick={() => copyLink(gig.slug)}
-                                className={`px-1.5 py-1 rounded-full text-[10px] transition-all flex items-center justify-center ${
+                                className={`px-1.5 py-1 rounded-full text-[10px] transition-colors flex items-center justify-center ${
                                   copiedSlug === gig.slug
-                                    ? 'bg-[#5c7a6a] text-white'
+                                    ? 'bg-gray-900 text-white'
                                     : 'bg-white border border-gray-300 hover:bg-gray-50'
                                 }`}
                                 title="Copy Link"
@@ -639,7 +635,7 @@ export default function Dashboard() {
                               </button>
                               <button
                                 onClick={() => downloadCsv(gig.slug)}
-                                className="flex-1 px-1.5 py-1 bg-[#5c7a6a] text-white rounded-full text-[10px] hover:bg-[#4a675a]"
+                                className="flex-1 px-1.5 py-1 bg-gray-200 text-gray-600 rounded-full text-[10px] hover:bg-gray-300 transition-colors"
                               >
                                 CSV
                               </button>
@@ -659,7 +655,7 @@ export default function Dashboard() {
                         // Empty cell - just show date
                         <div className={`text-sm ${
                           isToday
-                            ? 'bg-gray-700 text-white w-6 h-6 rounded-full flex items-center justify-center'
+                            ? 'bg-gray-900 text-white w-6 h-6 rounded-full flex items-center justify-center'
                             : 'text-gray-500'
                         }`}>
                           {date.getDate()}
@@ -674,12 +670,12 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Past/Upcoming Events Toggle */}
-      {(showPastEvents ? upcomingGigs.length > 0 : pastGigs.length > 0) && (
+      {/* Past/Upcoming Events Toggle - only show in list view */}
+      {viewMode === 'list' && (showPastEvents ? upcomingGigs.length > 0 : pastGigs.length > 0) && (
         <div className="text-center mt-8">
           <button
             onClick={() => setShowPastEvents(!showPastEvents)}
-            className="px-5 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-full hover:bg-gray-50"
+            className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors"
           >
             {showPastEvents ? `View Upcoming Events (${upcomingGigs.length})` : `View Past Events (${pastGigs.length})`}
           </button>

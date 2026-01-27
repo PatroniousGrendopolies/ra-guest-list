@@ -1,3 +1,5 @@
+// Multi-step wizard for bulk importing guest lists from calendar files.
+
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
@@ -263,7 +265,7 @@ export default function ImportPage() {
   const conflictCount = importEvents.filter((e) => e.selected && e.hasConflict).length
 
   return (
-    <main className="min-h-screen p-4 max-w-4xl mx-auto font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen p-4 max-w-4xl mx-auto bg-[#fcfcfd]">
       <div className="flex justify-center pt-4 mb-6">
         <Image
           src="/datcha-logo-black.jpg"
@@ -277,7 +279,7 @@ export default function ImportPage() {
       <div className="mb-6">
         <button
           onClick={() => router.push('/dashboard')}
-          className="text-gray-600 hover:text-gray-800 flex items-center gap-1"
+          className="text-gray-600 hover:text-gray-900 flex items-center gap-1 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -288,7 +290,7 @@ export default function ImportPage() {
 
       {/* Step 1: Upload */}
       {step === 'upload' && (
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h1 className="text-2xl font-bold mb-2">Import Calendar</h1>
           <p className="text-gray-600 mb-6">
             Upload a Google Calendar export (.ics file) to batch-create guest lists
@@ -345,7 +347,7 @@ export default function ImportPage() {
           )}
 
           {parseErrors.length > 0 && (
-            <div className="mt-4 bg-yellow-50 text-yellow-800 p-3 rounded-lg text-sm">
+            <div className="mt-4 bg-gray-100 border border-gray-200 text-gray-700 p-4 rounded-3xl text-sm">
               <p className="font-medium mb-1">Some events could not be parsed:</p>
               <ul className="list-disc list-inside">
                 {parseErrors.slice(0, 5).map((err, i) => (
@@ -362,7 +364,7 @@ export default function ImportPage() {
 
       {/* Step 2: Date Range */}
       {step === 'dateRange' && (
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h1 className="text-2xl font-bold mb-2">Select Date Range</h1>
           <p className="text-gray-600 mb-6">
             Found <span className="font-medium">{rawEvents.length}</span> events in{' '}
@@ -378,7 +380,7 @@ export default function ImportPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
               />
             </div>
             <div>
@@ -389,12 +391,12 @@ export default function ImportPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
               />
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6">
+          <div className="bg-gray-50 rounded-3xl p-4 mb-6">
             <p className="text-sm text-gray-600">
               <span className="font-medium">{importEvents.length}</span> events match this date
               range
@@ -404,14 +406,14 @@ export default function ImportPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep('upload')}
-              className="flex-1 px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
             >
               Back
             </button>
             <button
               onClick={() => setStep('preview')}
               disabled={importEvents.length === 0}
-              className="flex-1 px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Continue
             </button>
@@ -421,7 +423,7 @@ export default function ImportPage() {
 
       {/* Step 3: Preview & Edit */}
       {step === 'preview' && (
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h1 className="text-2xl font-bold mb-2">Preview & Edit Events</h1>
           <p className="text-gray-600 mb-4">
             Review and customize events before importing
@@ -431,13 +433,13 @@ export default function ImportPage() {
           <div className="flex flex-wrap items-center gap-3 mb-4 p-3 bg-gray-50 rounded-2xl">
             <button
               onClick={() => selectAll(true)}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-white"
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-full font-medium hover:bg-white transition-colors"
             >
               Select All
             </button>
             <button
               onClick={() => selectAll(false)}
-              className="px-3 py-1.5 text-sm border border-gray-300 rounded-full hover:bg-white"
+              className="px-3 py-1.5 text-sm border border-gray-300 rounded-full font-medium hover:bg-white transition-colors"
             >
               Deselect All
             </button>
@@ -448,11 +450,11 @@ export default function ImportPage() {
                 value={bulkGuestCap}
                 onChange={(e) => setBulkGuestCap(e.target.value)}
                 min="1"
-                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+                className="w-20 px-2 py-1.5 text-sm border border-gray-300 rounded-2xl focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
               />
               <button
                 onClick={applyBulkGuestCap}
-                className="px-3 py-1.5 text-sm bg-gray-700 text-white rounded-full hover:bg-gray-800"
+                className="px-3 py-1.5 text-sm bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
               >
                 Apply
               </button>
@@ -476,7 +478,7 @@ export default function ImportPage() {
                   <tr
                     key={event.id}
                     className={`border-b border-gray-100 ${
-                      event.hasConflict ? 'bg-yellow-50' : ''
+                      event.hasConflict ? 'bg-gray-50' : ''
                     } ${!event.selected ? 'opacity-50' : ''}`}
                   >
                     <td className="py-2 px-2">
@@ -484,13 +486,13 @@ export default function ImportPage() {
                         type="checkbox"
                         checked={event.selected}
                         onChange={() => toggleEvent(event.id)}
-                        className="w-4 h-4 rounded border-gray-300"
+                        className="w-4 h-4 rounded border-gray-300 accent-gray-900 cursor-pointer"
                       />
                     </td>
                     <td className="py-2 px-2 w-1/4">
                       <div>{formatDate(event.date)}</div>
                       {event.hasConflict && (
-                        <div className="text-xs text-yellow-700 mt-0.5">
+                        <div className="text-xs text-gray-600 mt-0.5">
                           Conflict: {event.conflictingGigs.map((g) => g.djName).join(', ')}
                         </div>
                       )}
@@ -512,7 +514,7 @@ export default function ImportPage() {
                           }
                         }}
                         rows={1}
-                        className="w-full px-2 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400 resize-none overflow-hidden"
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow resize-none overflow-hidden"
                       />
                     </td>
                     <td className="py-2 px-2">
@@ -529,7 +531,7 @@ export default function ImportPage() {
                           }
                         }}
                         min="1"
-                        className="w-full px-2 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
                       />
                     </td>
                     <td className="py-2 px-2">
@@ -546,7 +548,7 @@ export default function ImportPage() {
                           }
                         }}
                         min="1"
-                        className="w-full px-2 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-2xl focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
                       />
                     </td>
                   </tr>
@@ -559,7 +561,7 @@ export default function ImportPage() {
             <span className="font-medium">{selectedCount}</span> of {importEvents.length} events
             selected
             {conflictCount > 0 && (
-              <span className="text-yellow-700">
+              <span className="text-gray-600">
                 {' '}
                 ({conflictCount} with date conflicts)
               </span>
@@ -569,7 +571,7 @@ export default function ImportPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep('dateRange')}
-              className="flex-1 px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
             >
               Back
             </button>
@@ -583,7 +585,7 @@ export default function ImportPage() {
                 setTimeout(() => setStep('review'), 0)
               }}
               disabled={selectedCount === 0}
-              className="flex-1 px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Review Import
             </button>
@@ -593,7 +595,7 @@ export default function ImportPage() {
 
       {/* Step 4: Review & Confirm */}
       {step === 'review' && (
-        <div className="bg-white rounded-3xl p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h1 className="text-2xl font-bold mb-2">Confirm Import</h1>
           <p className="text-gray-600 mb-6">
             You are about to create <span className="font-medium">{selectedCount}</span> guest
@@ -601,7 +603,7 @@ export default function ImportPage() {
           </p>
 
           {conflictCount > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-2xl mb-4">
+            <div className="bg-gray-100 border border-gray-200 text-gray-700 p-4 rounded-3xl mb-4">
               <p className="font-medium">
                 {conflictCount} event{conflictCount !== 1 ? 's' : ''} will be created on dates
                 that already have guest lists
@@ -626,13 +628,13 @@ export default function ImportPage() {
                     <tr
                       key={event.id}
                       className={`border-b border-gray-100 ${
-                        event.hasConflict ? 'bg-yellow-50' : ''
+                        event.hasConflict ? 'bg-gray-50' : ''
                       }`}
                     >
                       <td className="py-2 px-3">
                         {formatDate(event.date)}
                         {event.hasConflict && (
-                          <span className="text-yellow-700 text-xs ml-1">(conflict)</span>
+                          <span className="text-gray-600 text-xs ml-1">(conflict)</span>
                         )}
                       </td>
                       <td className="py-2 px-3">{event.djName}</td>
@@ -645,15 +647,18 @@ export default function ImportPage() {
           </div>
 
           {submitError && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
-              {submitError}
+            <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl text-sm mb-4 flex items-start gap-3">
+              <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{submitError}</span>
             </div>
           )}
 
           <div className="flex gap-3">
             <button
               onClick={() => setStep('preview')}
-              className="flex-1 px-5 py-2.5 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
               disabled={submitting}
             >
               Back
@@ -661,7 +666,7 @@ export default function ImportPage() {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="flex-1 px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? 'Importing...' : 'Confirm Import'}
             </button>
@@ -671,10 +676,10 @@ export default function ImportPage() {
 
       {/* Step 5: Success */}
       {step === 'success' && (
-        <div className="bg-white rounded-3xl p-6 text-center">
-          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-emerald-600"
+              className="w-8 h-8 text-gray-700"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -695,7 +700,7 @@ export default function ImportPage() {
           <div className="flex flex-col gap-3">
             <button
               onClick={() => router.push('/dashboard')}
-              className="px-5 py-2.5 bg-gray-700 text-white rounded-full hover:bg-gray-800"
+              className="px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
             >
               View Dashboard
             </button>
@@ -707,7 +712,7 @@ export default function ImportPage() {
                 setImportEvents([])
                 setParseErrors([])
               }}
-              className="text-gray-600 hover:text-gray-800"
+              className="text-gray-600 hover:text-gray-900 transition-colors"
             >
               Import Another Calendar
             </button>

@@ -106,15 +106,15 @@ function GuestEditModal({ guest, gig: _gig, onClose, onSave }: GuestEditModalPro
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl p-6 w-full max-w-md"
+        className="bg-white rounded-2xl border border-gray-200 p-6 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold mb-1">Edit Guest</h2>
         <p className="text-gray-600 mb-4">{guest.name} ({guest.email})</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Number of Guests
             </label>
             <input
@@ -122,20 +122,20 @@ function GuestEditModal({ guest, gig: _gig, onClose, onSave }: GuestEditModalPro
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               min={1}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
               required
             />
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl text-sm">{error}</div>
           )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={handleDelete}
-              className="px-4 py-2 text-red-600 border border-red-300 rounded-full hover:bg-red-50 disabled:opacity-50"
+              className="px-5 py-2.5 text-gray-900 border border-gray-300 rounded-full font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={saving || deleting}
             >
               {deleting ? 'Removing...' : 'Remove'}
@@ -143,14 +143,14 @@ function GuestEditModal({ guest, gig: _gig, onClose, onSave }: GuestEditModalPro
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
               disabled={saving || deleting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={saving || deleting || !quantity || parseInt(quantity) < 1}
             >
               {saving ? 'Saving...' : 'Save'}
@@ -207,40 +207,40 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
       <div
-        className="bg-white rounded-3xl p-6 w-full max-w-md"
+        className="bg-white rounded-2xl border border-gray-200 p-6 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold mb-4">Edit Guest List</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               DJ / Artist Name
             </label>
             <input
               type="text"
               value={djName}
               onChange={(e) => setDjName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Date
             </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Guest Cap {gig.totalGuests > 0 && <span className="text-gray-500 font-normal">(min: {gig.totalGuests})</span>}
             </label>
             <input
@@ -249,17 +249,17 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
               onChange={(e) => setGuestCap(e.target.value)}
               min={gig.totalGuests || 1}
               placeholder="No limit"
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
             {gig.totalGuests > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 mt-1.5">
                 Currently {gig.totalGuests} guest{gig.totalGuests !== 1 ? 's' : ''} on the list
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">
               Max Guests Per Signup
             </label>
             <input
@@ -267,29 +267,29 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
               value={maxPerSignup}
               onChange={(e) => setMaxPerSignup(e.target.value)}
               min={1}
-              className="w-full px-4 py-2 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-2xl text-base bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-transparent transition-shadow autofill:bg-white autofill:shadow-[inset_0_0_0px_1000px_rgb(255,255,255)]"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-1.5">
               Maximum +1s allowed per signup
             </p>
           </div>
 
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <div className="bg-gray-100 border border-gray-300 text-gray-900 p-4 rounded-3xl text-sm">{error}</div>
           )}
 
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50"
+              className="flex-1 px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors"
               disabled={saving}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-full hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-5 py-2.5 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={saving || !djName.trim()}
             >
               {saving ? 'Saving...' : 'Save'}
@@ -311,17 +311,6 @@ export default function GigDetail() {
   const [copiedSlug, setCopiedSlug] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null)
-  const [loggingOut, setLoggingOut] = useState(false)
-
-  async function handleLogout() {
-    setLoggingOut(true)
-    try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      router.push('/login')
-    } catch {
-      setLoggingOut(false)
-    }
-  }
 
   async function fetchGig() {
     try {
@@ -394,7 +383,7 @@ export default function GigDetail() {
 
   if (loading) {
     return (
-      <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen p-4 max-w-6xl mx-auto bg-[#fcfcfd]">
         <div className="flex justify-center pt-4 mb-6">
           <Image
             src="/datcha-logo-black.jpg"
@@ -405,7 +394,7 @@ export default function GigDetail() {
           />
         </div>
         <div className="text-center py-20">
-          <div className="animate-spin w-8 h-8 border-4 border-gray-300 border-t-gray-700 rounded-full mx-auto"></div>
+          <div className="animate-spin w-8 h-8 border-4 border-gray-200 border-t-gray-900 rounded-full mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
         </div>
       </main>
@@ -414,7 +403,7 @@ export default function GigDetail() {
 
   if (error || !gig) {
     return (
-      <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
+      <main className="min-h-screen p-4 max-w-6xl mx-auto bg-[#fcfcfd]">
         <div className="flex justify-center pt-4 mb-6">
           <Image
             src="/datcha-logo-black.jpg"
@@ -425,8 +414,8 @@ export default function GigDetail() {
           />
         </div>
         <div className="text-center py-20">
-          <p className="text-red-600 mb-4">{error || 'Gig not found'}</p>
-          <button onClick={() => router.push('/dashboard')} className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+          <p className="text-gray-900 mb-4">{error || 'Gig not found'}</p>
+          <button onClick={() => router.push('/dashboard')} className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-50 transition-colors">
             Back to Dashboard
           </button>
         </div>
@@ -435,7 +424,7 @@ export default function GigDetail() {
   }
 
   return (
-    <main className="min-h-screen p-4 max-w-6xl mx-auto font-[Helvetica,Arial,sans-serif]">
+    <main className="min-h-screen p-4 max-w-6xl mx-auto bg-[#fcfcfd]">
       <div className="flex justify-center pt-4 mb-6">
         <Image
           src="/datcha-logo-black.jpg"
@@ -446,32 +435,25 @@ export default function GigDetail() {
         />
       </div>
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6">
         <button
           onClick={() => router.push('/dashboard')}
-          className="text-gray-600 hover:text-gray-900 text-sm flex items-center gap-1"
+          className="text-gray-600 hover:text-gray-900 text-sm flex items-center gap-1 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           Back to Dashboard
         </button>
-        <button
-          onClick={handleLogout}
-          disabled={loggingOut}
-          className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-full hover:bg-gray-50 disabled:opacity-50"
-        >
-          {loggingOut ? 'Logging out...' : 'Logout'}
-        </button>
       </div>
 
-      <div className="card mb-6 rounded-3xl">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h1 className="text-lg font-semibold">{gig.djName}</h1>
               {gig.isClosed && (
-                <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded">
+                <span className="bg-gray-200 text-gray-900 text-xs px-2.5 py-1 rounded-full inline-flex items-center">
                   Closed
                 </span>
               )}
@@ -482,10 +464,10 @@ export default function GigDetail() {
           <div className="flex flex-wrap gap-2">
             <button
               onClick={copyLink}
-              className={`px-4 py-2 text-sm border rounded-full transition-all ${
+              className={`px-3 py-1.5 text-xs border-[1.5px] rounded-full font-medium transition-colors ${
                 copiedSlug
-                  ? 'bg-emerald-600 text-white border-emerald-600'
-                  : 'border-gray-300 hover:bg-gray-50'
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'border-gray-900 text-gray-700 hover:bg-gray-50'
               }`}
             >
               {copiedSlug ? 'Copied!' : 'Copy Link'}
@@ -501,18 +483,14 @@ export default function GigDetail() {
                   {newGuestCount > 0 && (
                     <button
                       onClick={downloadNewCsv}
-                      className="px-4 py-2 text-sm bg-emerald-600 text-white rounded-full hover:bg-emerald-700"
+                      className="px-3 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-full font-medium hover:bg-gray-200 transition-colors"
                     >
                       Download CSV - New ({newGuestCount})
                     </button>
                   )}
                   <button
                     onClick={downloadCsv}
-                    className={`px-4 py-2 text-sm rounded-full ${
-                      hasBeenExported
-                        ? 'border border-gray-300 hover:bg-gray-50'
-                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
-                    }`}
+                    className="px-3 py-1.5 text-xs bg-gray-50 text-gray-500 rounded-full font-medium hover:bg-gray-100 transition-colors"
                   >
                     {hasBeenExported ? 'Download CSV - All' : 'Download CSV'}
                   </button>
@@ -521,7 +499,7 @@ export default function GigDetail() {
             })()}
             <button
               onClick={toggleClose}
-              className="px-4 py-2 text-sm border border-gray-300 rounded-full hover:bg-gray-50"
+              className="px-3 py-1.5 text-xs border border-gray-200 text-gray-400 rounded-full font-medium hover:bg-gray-50 transition-colors"
             >
               {gig.isClosed ? 'Reopen' : 'Close'}
             </button>
@@ -565,28 +543,21 @@ export default function GigDetail() {
               const percentage = (gig.totalGuests / gig.guestCap) * 100
               const isEmpty = gig.totalGuests === 0
               const isFull = gig.totalGuests >= gig.guestCap
-              const showCapNumber = percentage < 85
               return (
                 <>
-                  <div className="flex items-center h-5 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                     {!isEmpty && (
                       <div
-                        className={`h-full bg-gray-500 flex items-center justify-end pr-2 min-w-[2.5rem] ${isFull ? 'rounded-full' : 'rounded-full'}`}
+                        className="h-full bg-gray-900 rounded-full flex items-center justify-end pr-2 min-w-[2.5rem]"
                         style={{ width: isFull ? '100%' : `${Math.max(percentage, 10)}%` }}
                       >
                         <span className="text-white text-xs font-medium">{gig.totalGuests}</span>
                       </div>
                     )}
-                    {!isFull && (
-                      <div className={`flex-1 flex items-center pr-2 ${isEmpty ? 'justify-between pl-2' : 'justify-end'}`}>
-                        {isEmpty && <span className="text-gray-500 text-xs">0</span>}
-                        <span className={`text-gray-500 text-xs ${!showCapNumber && !isEmpty ? 'hidden' : ''}`}>{gig.guestCap}</span>
-                      </div>
-                    )}
                   </div>
                   <div className="flex justify-between mt-1 text-xs text-gray-500">
                     <span>Confirmed</span>
-                    <span>Spots available</span>
+                    <span>{gig.guestCap - gig.totalGuests} spots available</span>
                   </div>
                 </>
               )
@@ -595,7 +566,7 @@ export default function GigDetail() {
         )}
       </div>
 
-      <div className="card rounded-3xl">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
         <h2 className="text-lg font-semibold mb-4">Guest List</h2>
 
         {gig.guests.length === 0 ? (
@@ -621,7 +592,7 @@ export default function GigDetail() {
                       <span className="flex items-center gap-2">
                         {guest.name}
                         {isNewGuest(guest.createdAt, gig.lastExportedAt) && (
-                          <span className="bg-emerald-100/60 text-emerald-600/80 text-xs px-2 py-0.5 rounded-full">
+                          <span className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full inline-flex items-center">
                             NEW
                           </span>
                         )}
