@@ -1,3 +1,5 @@
+// Public guest signup form - collects name, email, and party size.
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -64,6 +66,7 @@ export default function GigSignUpClient({ slug }: GigSignUpClientProps) {
       name: formData.get('name'),
       email: formData.get('email'),
       quantity: formData.get('quantity'),
+      marketingConsent: formData.get('marketingConsent') === 'on',
     }
 
     try {
@@ -279,6 +282,19 @@ export default function GigSignUpClient({ slug }: GigSignUpClientProps) {
                 </>
               )
             })()}
+          </div>
+
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="marketingConsent"
+              name="marketingConsent"
+              defaultChecked={true}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-gray-700 focus:ring-gray-500"
+            />
+            <label htmlFor="marketingConsent" className="text-sm text-gray-600 cursor-pointer">
+              Get early access to private lists and exclusive event invites
+            </label>
           </div>
 
           {error && (

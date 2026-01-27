@@ -10,7 +10,7 @@ export async function POST(
   try {
     const { slug } = await params
     const body = await request.json()
-    const { name, email, quantity } = body
+    const { name, email, quantity, marketingConsent } = body
 
     if (!name || !email || !quantity) {
       return NextResponse.json(
@@ -98,6 +98,7 @@ export async function POST(
         name,
         email: normalizedEmail,
         quantity: parsedQuantity,
+        marketingConsent: marketingConsent !== undefined ? !!marketingConsent : true,
         gigId: gig.id,
       },
     })

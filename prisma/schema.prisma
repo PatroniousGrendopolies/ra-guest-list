@@ -28,13 +28,14 @@ model Gig {
 }
 
 model Guest {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
-  gigId     String
-  gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  name             String
+  email            String
+  quantity         Int      @default(1)
+  marketingConsent Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  gigId            String
+  gig              Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
 }
 
 model AdminConfig {

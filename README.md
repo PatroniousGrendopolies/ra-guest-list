@@ -10,6 +10,7 @@ A lightweight web app for nightclub bookers to create gig-specific guest list si
 - **Calendar Import** - Batch import events from Google Calendar (.ics files) with preview and editing
 - **Shareable Links** - Each gig gets a unique URL for DJs to share with their guests
 - **Guest Sign-up** - Mobile-friendly forms for guests to RSVP with +1s
+- **Marketing Consent** - Optional opt-in checkbox for guests to receive event invites (checked by default)
 - **Dashboard** - List and calendar views to see all gigs, guest counts, close/reopen lists
 - **Gig Editing** - Edit DJ name, adjust capacity, configure max guests per signup
 - **Guest Management** - Click any guest row to edit quantity or remove from list
@@ -82,13 +83,14 @@ model Gig {
 }
 
 model Guest {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
-  gigId     String
-  gig       Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
+  id               String   @id @default(cuid())
+  name             String
+  email            String
+  quantity         Int      @default(1)
+  marketingConsent Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  gigId            String
+  gig              Gig      @relation(fields: [gigId], references: [id], onDelete: Cascade)
 }
 ```
 
@@ -197,6 +199,7 @@ CREATE TABLE "Guest" (
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "quantity" INTEGER NOT NULL DEFAULT 1,
+    "marketingConsent" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "gigId" TEXT NOT NULL,
     CONSTRAINT "Guest_pkey" PRIMARY KEY ("id")

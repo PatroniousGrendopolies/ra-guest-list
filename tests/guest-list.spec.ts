@@ -641,3 +641,69 @@ test.describe('Edge Cases', () => {
     await expect(page.getByRole('heading', { name: 'Guest List Creator' })).toBeVisible()
   })
 })
+
+test.describe('Marketing Consent', () => {
+  let gigSlug: string
+
+  test.beforeEach(async ({ page }) => {
+    gigSlug = await createGigAndGetSlug(page, uniqueName('DJ Marketing'))
+  })
+
+  test('should show marketing consent checkbox checked by default', async ({ page }) => {
+    await page.goto(`/gig/${gigSlug}`)
+
+    const checkbox = page.getByLabel(/Get early access to private lists/i)
+    await expect(checkbox).toBeVisible()
+    await expect(checkbox).toBeChecked()
+  })
+
+  test('should store consent as true when checkbox is checked', async ({ page }) => {
+    await page.goto(`/gig/${gigSlug}`)
+
+    await page.getByLabel(/Your Name/).fill('Opted In Guest')
+    await page.getByLabel(/Email/).fill('optin@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+
+    await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
+  })
+
+  test('should store consent as false when checkbox is unchecked', async ({ page }) => {
+    await page.goto(`/gig/${gigSlug}`)
+
+    await page.getByLabel(/Your Name/).fill('Opted Out Guest')
+    await page.getByLabel(/Email/).fill('optout@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+
+    const checkbox = page.getByLabel(/Get early access to private lists/i)
+    await checkbox.uncheck()
+    await expect(checkbox).not.toBeChecked()
+
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
+  })
+
+  test('should not prevent signup if consent checkbox is unchecked', async ({ page }) => {
+    await page.goto(`/gig/${gigSlug}`)
+
+    await page.getByLabel(/Your Name/).fill('Minimal Guest')
+    await page.getByLabel(/Email/).fill('minimal@example.com')
+    await page.getByLabel(/Number of Guests/).fill('1')
+    await page.getByLabel(/Get early access to private lists/i).uncheck()
+
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+    await expect(page.getByRole('heading', { name: "You're on the list!" })).toBeVisible()
+  })
+
+  test('should maintain form functionality with consent field', async ({ page }) => {
+    await page.goto(`/gig/${gigSlug}`)
+
+    const checkbox = page.getByLabel(/Get early access to private lists/i)
+    await checkbox.uncheck()
+
+    await page.getByRole('button', { name: 'Sign Up' }).click()
+
+    const nameInput = page.getByLabel(/Your Name/)
+    await expect(nameInput).toHaveAttribute('required', '')
+  })
+})

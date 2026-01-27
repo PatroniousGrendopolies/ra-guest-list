@@ -160,96 +160,25 @@ A lightweight web app for nightclub bookers to rapidly create gig-specific guest
 
   * Single admin user stored in database (`AdminConfig` model).
 
+### Phase 5: Marketing Consent (Completed)
+
+* **Guest Opt-in for Marketing**
+
+  * Optional checkbox on guest signup form for receiving event invites.
+
+  * Checked by default (opt-out model).
+
+  * Label: "Get early access to private lists and exclusive event invites".
+
+  * Stored in `Guest.marketingConsent` Boolean field (default: true).
+
+  * CSV export format unchanged to maintain Resident Advisor compatibility.
+
 ---
 
 ## Feature Roadmap
 
-The following features are planned for future releases:
-
-### Future User Stories
-
-* As a booker, I want to import events from my Google Calendar, so I can quickly create guest lists for scheduled gigs without manual data entry.
-
-* As a booker, I want to view a contacts page showing all past attendees, so I can see who my repeat guests are and which DJs they follow.
-
-* As a booker, I want to see how many gigs each contact has attended, so I can identify my most loyal guests.
-
-* As a DJ, I want my own dashboard to review, edit, and approve my guest list before the event.
-
-* As a DJ, I want to invite past attendees to my upcoming events so I can build a loyal following.
-
-* As a manager, I want to add guest types (VIP, industry, etc.) that are visible only to staff.
-
-### Data Quality & Validation
-
-- [ ] **Duplicate Export Prevention** - Same guest won't be exported twice for the same event
-
-- [x] **Email Uniqueness Enforcement** - Same email can't sign up twice for the same gig (case-insensitive)
-
-### Sign-up Analytics
-
-- [ ] **Sign-up Timestamps** - Store and display sign-up time for guests
-
-- [ ] **Sortable Guest List** - Sort by sign-up time
-
-- [ ] **Sign-up Time Visualization** - Line chart showing sign-up distribution over time
-
-### Form UX Improvements
-
-- [ ] **Dropdown Increments** - Dropdowns with preset increments for list creation (capacity, max per signup)
-
-### Calendar & Import
-
-- [ ] **Google Calendar OAuth** - OAuth integration with Google Calendar API for direct event import
-
-- [ ] **AI Calendar Import** - Parse calendars from text and images (not just .ics files)
-
-### Contact Management
-
-- [ ] **Contacts Page** - Aggregate view of all unique attendees across gigs with attendance history, sortable and searchable
-
-- [ ] **Mailing List / CRM** - Contact management with export functionality
-
-- [ ] **SMS Support** - SMS notifications for guests/DJs
-
-### DJ Portal
-
-- [ ] **DJ Dashboard** - Dedicated portal for DJs to manage their lists
-  - Review, edit, and approve guest list
-  - Mobile-friendly share button for bulk invites
-  - Generate distinct links per invited contact (prevents link reuse)
-
-- [ ] **DJ Past Attendee Invites** - DJs can invite guests who attended their previous events
-
-### Manager Features
-
-- [ ] **Types Column** - Hidden from guests, visible/editable by managers and DJs (default blank)
-
-- [ ] **RA Analytics Shortcuts** - Quick buttons linking to Resident Advisor event analytics
-
-### Platform & Branding
-
-- [ ] **Rebrand to Nightlist**
-  - New URL structure: `www.datcha.nightlist.com/dashboard`
-  - "Powered by Nightlist" beneath venue logo
-  - Multi-tenant architecture for multiple venues
-
-### Operations & Check-in
-
-- [ ] **Native Scanner** - Built-in QR/ticket scanner for door check-in
-
-- [ ] **API Push to RA** - Direct API integration to push guest lists to Resident Advisor
-
-### Advanced Integrations
-
-- [ ] **POS Integration** - Connect to point-of-sale for bar sales analytics per list attendee
-
-### Testing & Development
-
-- [ ] **Test Authentication** - Set up test credentials and login flow for Playwright tests
-  - Create test user seeding script
-  - Add login helper to test suite
-  - Ensure tests can run in CI without manual setup
+For planned features, improvements, and technical debt items, see **[TODOS.md](TODOS.md)**.
 
 ---
 
