@@ -483,7 +483,6 @@ export default function Dashboard() {
                       const percentage = (gig.totalGuests / gig.guestCap) * 100
                       const isEmpty = gig.totalGuests === 0
                       const isFull = gig.totalGuests >= gig.guestCap
-                      const showCapNumber = percentage < 85
                       return (
                         <div className="h-4 bg-gray-200 rounded-full overflow-hidden">
                           {!isEmpty && (
