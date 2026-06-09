@@ -19,6 +19,27 @@ export interface ParseResult {
  * - DTSTART:20240323T200000Z (with time, UTC)
  * - DTSTART;TZID=America/Toronto:20240323T200000 (with time, timezone)
  */
+// The venue's timezone. A gig's "date" is the calendar night it happens in this
+// zone, stored as midnight UTC of that day so it renders identically everywhere.
+const VENUE_TIMEZONE = 'America/Toronto'
+
+// Midnight UTC of a given calendar day (the canonical storage form for a gig date).
+function venueDayToUTC(year: number, month: number, day: number): Date {
+  return new Date(Date.UTC(year, month, day))
+}
+
+// Find which calendar day a UTC instant falls on in the venue timezone.
+function venueCalendarDay(instant: Date): { year: number; month: number; day: number } {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: VENUE_TIMEZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(instant)
+  const get = (type: string) => parseInt(parts.find((p) => p.type === type)!.value, 10)
+  return { year: get('year'), month: get('month') - 1, day: get('day') }
+}
+
 function parseICalDate(line: string): Date | null {
   // Extract the date part from various formats
   const colonIndex = line.lastIndexOf(':')
@@ -26,12 +47,12 @@ function parseICalDate(line: string): Date | null {
 
   const dateStr = line.slice(colonIndex + 1).trim()
 
-  // All-day event format: YYYYMMDD
+  // All-day event format: YYYYMMDD — the calendar day is given directly.
   if (dateStr.length === 8) {
     const year = parseInt(dateStr.slice(0, 4), 10)
     const month = parseInt(dateStr.slice(4, 6), 10) - 1
     const day = parseInt(dateStr.slice(6, 8), 10)
-    return new Date(year, month, day)
+    return venueDayToUTC(year, month, day)
   }
 
   // Datetime format: YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
@@ -43,13 +64,16 @@ function parseICalDate(line: string): Date | null {
     const minute = parseInt(dateStr.slice(11, 13), 10)
     const second = dateStr.length >= 15 ? parseInt(dateStr.slice(13, 15), 10) : 0
 
-    // If it ends with Z, it's UTC
+    // UTC instant: resolve which venue-local night it belongs to. A 21:00 gig
+    // exported as 01:00Z the next day must still count as the previous night.
     if (dateStr.endsWith('Z')) {
-      return new Date(Date.UTC(year, month, day, hour, minute, second))
+      const instant = new Date(Date.UTC(year, month, day, hour, minute, second))
+      const d = venueCalendarDay(instant)
+      return venueDayToUTC(d.year, d.month, d.day)
     }
 
-    // Otherwise treat as local time
-    return new Date(year, month, day, hour, minute, second)
+    // Floating or TZID-local time: the date part is already the venue-local day.
+    return venueDayToUTC(year, month, day)
   }
 
   return null

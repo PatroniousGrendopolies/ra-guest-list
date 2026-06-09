@@ -7,6 +7,13 @@ export function generateSlug(): string {
   return nanoid()
 }
 
+// Convert a YYYY-MM-DD date-input value into the canonical stored value:
+// midnight UTC of that calendar day. Used by every write path (create + edit)
+// so they store the exact same instant for the same picked day, in any timezone.
+export function gigDateFromInput(dateStr: string): Date {
+  return new Date(dateStr + 'T00:00:00Z')
+}
+
 // Gig dates are stored as midnight UTC of the intended calendar day, so all
 // formatting is pinned to UTC. This makes the rendered day deterministic and
 // identical on the Netlify server (UTC) and in every guest's browser timezone.
