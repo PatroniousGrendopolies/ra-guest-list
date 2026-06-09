@@ -216,13 +216,15 @@ export default function ImportPage() {
     )
   }
 
-  // Format date for display
+  // Format date for display. Gig dates are midnight UTC of the venue calendar
+  // day, so format in UTC to show that day rather than the day before locally.
   function formatDate(date: Date): string {
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     })
   }
 

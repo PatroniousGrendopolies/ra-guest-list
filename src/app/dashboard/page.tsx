@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { formatDateShort } from '@/lib/utils'
+import { formatDateShort, gigDateFromInput } from '@/lib/utils'
 
 interface Gig {
   id: string
@@ -52,7 +52,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           djName: djName.trim(),
-          date: new Date(date + 'T00:00:00Z').toISOString(), // Z -> midnight UTC of the picked day
+          date: gigDateFromInput(date).toISOString(), // midnight UTC of the picked day
           guestCap: guestCap ? parseInt(guestCap, 10) : null,
           maxPerSignup: maxPerSignup ? parseInt(maxPerSignup, 10) : 10,
         }),

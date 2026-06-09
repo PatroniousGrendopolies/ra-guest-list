@@ -134,11 +134,14 @@ export default function Home() {
   }
 
   function formatDate(dateStr: string) {
+    // dateStr is a YYYY-MM-DD value, parsed as midnight UTC. Format in UTC so the
+    // confirmation dialog shows the picked day, not the day before in local time.
     return new Date(dateStr).toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
       year: 'numeric',
+      timeZone: 'UTC',
     })
   }
 

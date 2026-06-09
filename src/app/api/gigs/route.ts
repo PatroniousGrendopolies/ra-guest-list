@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { generateSlug } from '@/lib/utils'
+import { generateSlug, gigDateFromInput } from '@/lib/utils'
 
 export async function GET() {
   try {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const gig = await prisma.gig.create({
       data: {
         slug,
-        date: new Date(date + 'T00:00:00Z'), // force midnight UTC of the picked day
+        date: gigDateFromInput(date), // midnight UTC of the picked day
         djName,
         venueName: venueName || null,
         guestCap: guestCap ? parseInt(guestCap) : null,
