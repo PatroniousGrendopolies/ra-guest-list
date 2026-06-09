@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const gig = await prisma.gig.create({
       data: {
         slug,
-        date: new Date(date),
+        date: new Date(date + 'T00:00:00Z'), // force midnight UTC of the picked day
         djName,
         venueName: venueName || null,
         guestCap: guestCap ? parseInt(guestCap) : null,

@@ -7,12 +7,16 @@ export function generateSlug(): string {
   return nanoid()
 }
 
+// Gig dates are stored as midnight UTC of the intended calendar day, so all
+// formatting is pinned to UTC. This makes the rendered day deterministic and
+// identical on the Netlify server (UTC) and in every guest's browser timezone.
 export function formatDate(date: Date): string {
   return new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   }).format(date)
 }
 
@@ -22,27 +26,25 @@ export function formatDateShort(date: Date): string {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
+    timeZone: 'UTC',
   }).format(date)
 }
 
 export function getRelativeDayName(date: Date): string {
-  const today = new Date()
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
+  // Work entirely in UTC so the server (UTC) and every browser agree.
+  const now = new Date()
+  const oneDay = 24 * 60 * 60 * 1000
+  const dateOnly = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  const todayOnly = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
 
-  // Compare only the date parts (ignoring time)
-  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate())
-
-  if (dateOnly.getTime() === todayOnly.getTime()) {
+  if (dateOnly === todayOnly) {
     return 'tonight'
   }
 
-  if (dateOnly.getTime() === tomorrowOnly.getTime()) {
+  if (dateOnly === todayOnly + oneDay) {
     return 'tomorrow'
   }
 
   // Return the day name (e.g., "Friday")
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)
+  return new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(date)
 }

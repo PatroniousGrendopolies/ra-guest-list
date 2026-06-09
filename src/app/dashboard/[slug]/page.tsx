@@ -184,7 +184,7 @@ function EditModal({ gig, onClose, onSave }: EditModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           djName: djName.trim(),
-          date: new Date(date + 'T00:00:00').toISOString(),
+          date: new Date(date + 'T00:00:00Z').toISOString(), // Z -> midnight UTC of the picked day
           guestCap: guestCap ? parseInt(guestCap, 10) : null,
           maxPerSignup: maxPerSignup ? parseInt(maxPerSignup, 10) : 10,
         }),
