@@ -295,14 +295,22 @@ export default function Dashboard() {
 
   const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
-  // Filter gigs into upcoming and past
+  // Split gigs into upcoming and past by calendar day. Gig dates are stored as
+  // midnight UTC of the intended day, so this comparison is done entirely in UTC
+  // (matching formatDateShort / getRelativeDayName). Comparing a gig's UTC
+  // instant against a local-midnight "now" previously bucketed today's event as
+  // past for viewers in negative-UTC-offset timezones, hiding it from the list.
   const now = new Date()
-  now.setHours(0, 0, 0, 0)
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const gigUtcDay = (gig: Gig) => {
+    const d = new Date(gig.date)
+    return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+  }
   const upcomingGigs = gigs
-    .filter((gig) => new Date(gig.date) >= now)
+    .filter((gig) => gigUtcDay(gig) >= todayUtc)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Ascending: soonest first
   const pastGigs = gigs
-    .filter((gig) => new Date(gig.date) < now)
+    .filter((gig) => gigUtcDay(gig) < todayUtc)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Descending: most recent first
   const displayedGigs = showPastEvents ? pastGigs : upcomingGigs
 
