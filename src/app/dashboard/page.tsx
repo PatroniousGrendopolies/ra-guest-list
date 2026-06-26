@@ -275,12 +275,17 @@ export default function Dashboard() {
   }
 
   function getGigsForDate(date: Date) {
+    // Calendar cells are built with new Date(year, month, i), so their local
+    // components ARE the intended calendar day. Gig dates are stored as midnight
+    // UTC, so match on UTC components to place each gig on its intended day
+    // (matching the UTC-pinned list labels). Comparing local-to-local here
+    // shifted gigs a day earlier for viewers in negative-UTC-offset timezones.
     return gigs.filter((gig) => {
       const gigDate = new Date(gig.date)
       return (
-        gigDate.getFullYear() === date.getFullYear() &&
-        gigDate.getMonth() === date.getMonth() &&
-        gigDate.getDate() === date.getDate()
+        gigDate.getUTCFullYear() === date.getFullYear() &&
+        gigDate.getUTCMonth() === date.getMonth() &&
+        gigDate.getUTCDate() === date.getDate()
       )
     })
   }
@@ -549,10 +554,11 @@ export default function Dashboard() {
 
             {getCalendarDays().map((date, index) => {
               const dayGigs = date ? getGigsForDate(date) : []
+              const today = new Date()
               const isToday = date &&
-                date.getFullYear() === new Date().getFullYear() &&
-                date.getMonth() === new Date().getMonth() &&
-                date.getDate() === new Date().getDate()
+                date.getFullYear() === today.getUTCFullYear() &&
+                date.getMonth() === today.getUTCMonth() &&
+                date.getDate() === today.getUTCDate()
               const hasGig = dayGigs.length > 0
 
               return (
