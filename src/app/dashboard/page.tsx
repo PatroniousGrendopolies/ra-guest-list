@@ -275,12 +275,17 @@ export default function Dashboard() {
   }
 
   function getGigsForDate(date: Date) {
+    // Calendar cells are built with new Date(year, month, i), so their local
+    // components ARE the intended calendar day. Gig dates are stored as midnight
+    // UTC, so match on UTC components to place each gig on its intended day
+    // (matching the UTC-pinned list labels). Comparing local-to-local here
+    // shifted gigs a day earlier for viewers in negative-UTC-offset timezones.
     return gigs.filter((gig) => {
       const gigDate = new Date(gig.date)
       return (
-        gigDate.getFullYear() === date.getFullYear() &&
-        gigDate.getMonth() === date.getMonth() &&
-        gigDate.getDate() === date.getDate()
+        gigDate.getUTCFullYear() === date.getFullYear() &&
+        gigDate.getUTCMonth() === date.getMonth() &&
+        gigDate.getUTCDate() === date.getDate()
       )
     })
   }
@@ -295,14 +300,22 @@ export default function Dashboard() {
 
   const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 
-  // Filter gigs into upcoming and past
+  // Split gigs into upcoming and past by calendar day. Gig dates are stored as
+  // midnight UTC of the intended day, so this comparison is done entirely in UTC
+  // (matching formatDateShort / getRelativeDayName). Comparing a gig's UTC
+  // instant against a local-midnight "now" previously bucketed today's event as
+  // past for viewers in negative-UTC-offset timezones, hiding it from the list.
   const now = new Date()
-  now.setHours(0, 0, 0, 0)
+  const todayUtc = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+  const gigUtcDay = (gig: Gig) => {
+    const d = new Date(gig.date)
+    return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+  }
   const upcomingGigs = gigs
-    .filter((gig) => new Date(gig.date) >= now)
+    .filter((gig) => gigUtcDay(gig) >= todayUtc)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Ascending: soonest first
   const pastGigs = gigs
-    .filter((gig) => new Date(gig.date) < now)
+    .filter((gig) => gigUtcDay(gig) < todayUtc)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Descending: most recent first
   const displayedGigs = showPastEvents ? pastGigs : upcomingGigs
 
@@ -541,10 +554,11 @@ export default function Dashboard() {
 
             {getCalendarDays().map((date, index) => {
               const dayGigs = date ? getGigsForDate(date) : []
+              const today = new Date()
               const isToday = date &&
-                date.getFullYear() === new Date().getFullYear() &&
-                date.getMonth() === new Date().getMonth() &&
-                date.getDate() === new Date().getDate()
+                date.getFullYear() === today.getUTCFullYear() &&
+                date.getMonth() === today.getUTCMonth() &&
+                date.getDate() === today.getUTCDate()
               const hasGig = dayGigs.length > 0
 
               return (
