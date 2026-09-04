@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { formatDateShort, gigDateFromInput } from '@/lib/utils'
+import { formatDateShort, gigDateFromInput, gigDayKey, isGigPast, localDayKey } from '@/lib/utils'
 
 interface Gig {
   id: string
@@ -275,14 +275,8 @@ export default function Dashboard() {
   }
 
   function getGigsForDate(date: Date) {
-    return gigs.filter((gig) => {
-      const gigDate = new Date(gig.date)
-      return (
-        gigDate.getFullYear() === date.getFullYear() &&
-        gigDate.getMonth() === date.getMonth() &&
-        gigDate.getDate() === date.getDate()
-      )
-    })
+    // `date` is a local calendar cell; gig dates are midnight UTC of their day.
+    return gigs.filter((gig) => gigDayKey(new Date(gig.date)) === localDayKey(date))
   }
 
   function prevMonth() {
@@ -299,10 +293,10 @@ export default function Dashboard() {
   const now = new Date()
   now.setHours(0, 0, 0, 0)
   const upcomingGigs = gigs
-    .filter((gig) => new Date(gig.date) >= now)
+    .filter((gig) => !isGigPast(new Date(gig.date), now))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // Ascending: soonest first
   const pastGigs = gigs
-    .filter((gig) => new Date(gig.date) < now)
+    .filter((gig) => isGigPast(new Date(gig.date), now))
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) // Descending: most recent first
   const displayedGigs = showPastEvents ? pastGigs : upcomingGigs
 

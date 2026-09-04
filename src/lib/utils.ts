@@ -55,3 +55,22 @@ export function getRelativeDayName(date: Date): string {
   // Return the day name (e.g., "Friday")
   return new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'UTC' }).format(date)
 }
+
+// The calendar day a gig is on (YYYY-MM-DD). Stored gig dates are midnight UTC
+// of the intended day, so the UTC date fields are the source of truth.
+export function gigDayKey(gigDate: Date): string {
+  return gigDate.toISOString().slice(0, 10)
+}
+
+// The viewer's local calendar day (YYYY-MM-DD) for an arbitrary instant.
+export function localDayKey(instant: Date = new Date()): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${instant.getFullYear()}-${pad(instant.getMonth() + 1)}-${pad(instant.getDate())}`
+}
+
+// A gig is "past" only once the viewer's local calendar has moved beyond the
+// gig's day. Comparing the raw instant (midnight UTC) against `now` would push
+// tonight's event into the past at 8pm the night before in Montreal.
+export function isGigPast(gigDate: Date, now: Date = new Date()): boolean {
+  return gigDayKey(gigDate) < localDayKey(now)
+}
