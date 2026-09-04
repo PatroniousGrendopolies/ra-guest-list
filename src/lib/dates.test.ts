@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { gigDateFromInput, formatDate, formatDateShort, getRelativeDayName } from './utils'
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+import { gigDateFromInput, formatDate, formatDateShort, getRelativeDayName, gigDayKey, isGigPast, localDayKey } from './utils'
 import { parseICalContent } from './ical-parser'
 
 // Regression guard for the off-by-one date bug. A gig "date" is a calendar day,
@@ -76,5 +76,46 @@ describe('iCal import (venue-timezone anchoring)', () => {
     // 21:00 in Toronto (UTC-4 in June) is 01:00Z on the 13th. It must count as
     // the night of the 12th, the bug that pushed imported gigs a day forward.
     expect(importDate('DTSTART:20260613T010000Z').toISOString()).toBe('2026-06-12T00:00:00.000Z')
+  })
+})
+
+// Regression guard: a gig on today's calendar day must stay "upcoming" all day
+// in the viewer's timezone. The stored instant is midnight UTC, which is 8pm the
+// previous evening in Montreal, so a raw instant comparison against `now` filed
+// tonight's event under "Past Guest Lists" from the night before.
+describe('isGigPast (dashboard upcoming/past split)', () => {
+  const originalTZ = process.env.TZ
+  beforeAll(() => {
+    process.env.TZ = 'America/Montreal'
+  })
+  afterAll(() => {
+    process.env.TZ = originalTZ
+  })
+
+  const tonight = gigDateFromInput('2026-09-04') // Friday
+
+  it('keeps tonight’s gig upcoming on the morning of the event', () => {
+    const fri9am = new Date('2026-09-04T13:13:00Z') // 9:13am EDT
+    expect(isGigPast(tonight, fri9am)).toBe(false)
+  })
+
+  it('keeps tonight’s gig upcoming late in the evening (after midnight UTC)', () => {
+    const fri11pm = new Date('2026-09-05T03:00:00Z') // 11pm EDT Friday
+    expect(isGigPast(tonight, fri11pm)).toBe(false)
+  })
+
+  it('files the gig under past on the following local day', () => {
+    const satMorning = new Date('2026-09-05T13:00:00Z') // 9am EDT Saturday
+    expect(isGigPast(tonight, satMorning)).toBe(true)
+  })
+
+  it('treats a gig on the previous day as past', () => {
+    expect(isGigPast(gigDateFromInput('2026-09-03'), new Date('2026-09-04T13:13:00Z'))).toBe(true)
+  })
+
+  it('places the gig on its own local calendar cell', () => {
+    const cell = new Date(2026, 8, 4) // local Sep 4 cell in the month grid
+    expect(gigDayKey(tonight)).toBe(localDayKey(cell))
+    expect(gigDayKey(tonight)).not.toBe(localDayKey(new Date(2026, 8, 3)))
   })
 })
