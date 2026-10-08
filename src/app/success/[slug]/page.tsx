@@ -69,7 +69,7 @@ export default function SuccessPage() {
             Your spot has been reserved. See you there!
           </p>
           <p className="text-gray-500 text-sm mt-3">
-            Resident Advisor will email your QR code ticket before the event.
+            Your QR code ticket from Resident Advisor is on its way to your email now. Check your spam folder if it isn&apos;t there in a few minutes.
           </p>
         </div>
 

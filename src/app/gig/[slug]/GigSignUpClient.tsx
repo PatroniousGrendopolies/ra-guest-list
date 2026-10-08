@@ -243,7 +243,7 @@ export default function GigSignUpClient({ slug }: GigSignUpClientProps) {
           </div>
 
           <div>
-            <p className="text-gray-500 text-sm mb-2">Guestlist tickets are sent via email</p>
+            <p className="text-gray-500 text-sm mb-2">Your QR code ticket is emailed right after you sign up</p>
             <label htmlFor="email" className="label">
               Email *
             </label>
