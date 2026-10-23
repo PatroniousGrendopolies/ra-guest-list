@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { getSessionEmail } from '@/lib/auth'
 
 export async function GET(
   request: NextRequest,
@@ -24,6 +25,22 @@ export async function GET(
     }
 
     const totalGuests = gig.guests.reduce((sum, g) => sum + g.quantity, 0)
+
+    // This route is public (middleware allowlists it for the signup and success pages),
+    // so only admins get the guest list; everyone else gets the public gig fields.
+    if (!(await getSessionEmail())) {
+      const { slug: gigSlug, djName, date, venueName, guestCap, isClosed, maxPerSignup } = gig
+      return NextResponse.json({
+        slug: gigSlug,
+        djName,
+        date,
+        venueName,
+        guestCap,
+        isClosed,
+        maxPerSignup,
+        totalGuests,
+      })
+    }
 
     return NextResponse.json({
       ...gig,
